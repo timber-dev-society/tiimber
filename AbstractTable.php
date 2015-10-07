@@ -79,10 +79,9 @@ abstract class AbstractTable
 
   public function execute($sql)
   {
-    $connection = Sql::getInstance();
-
-    $select = $connection->query($sql);
+    $select = Sql::connect()->query($sql);
     $select->setFetchMode(\PDO::FETCH_OBJ);
+
     return $select;
   }
 
@@ -115,9 +114,8 @@ abstract class AbstractTable
     $values = implode(', ', (array)$entity);
 
     $sql = 'INSERT INTO ' . static::TABLE . '(' . $columns . ') VALUES (' . $values .')';
-    var_dump($sql);
-    $connection = Sql::getInstance();
-    $request = $connection->prepare($sql);
+
+    $request = Sql::connect()->prepare($sql);
     $request->execute();
   }
 

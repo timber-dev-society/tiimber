@@ -22,7 +22,7 @@ class Sql
     }
   }
 
-  public function getInstance()
+  public function connect()
   {
     if (!self::$instance) {
       self::$instance = new self();
