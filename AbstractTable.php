@@ -92,37 +92,44 @@ abstract class AbstractTable
     $properties = $this->execute('desc ' . static::TABLE)->fetchAll();
 
     $entity = new \stdClass();
-    foreach ($properties as $property) {
-      if (property_exists($values, $property->Field)) {
-        $entity->{$property->Field} = $values->{$property->Field};
-      }
-    }
+    $this->parseTableDefinition($values, function ($field, $type) use ($entity, $values) {
+      $entity->{$field} = $values->{$field};
+    });
 
     return $this->create($entity);
   }
 
   public function create($entity)
   {
+    $entity = (object)$entity;
     $this->beforeCreate($entity);
     $properties = $this->execute('desc ' . static::TABLE)->fetchAll();
 
-    foreach ($properties as $property) {
-      if (property_exists($entity, $property->Field)) {
-        $type = reset(explode('(', $property->Type));
-
-        if (in_array($type, self::$stringTypes)) {
-          $entity->{$property->Field} = '"' . addslashes($entity->{$property->Field}) . '"';
-        }
+    $this->parseTableDefinition($entity, function ($field, $type) use ($entity) {
+      if (in_array($type, self::$stringTypes)) {
+        $entity->{$field} = '"' . addslashes($entity->{$field}) . '"';
       }
-    }
+    });
+
     $columns = implode(', ', array_keys((array)$entity));
     $values = implode(', ', (array)$entity);
 
     $sql = 'INSERT INTO ' . static::TABLE . '(' . $columns . ') VALUES (' . $values .')';
-
+    var_dump($sql);
     $connection = Sql::getInstance();
     $request = $connection->prepare($sql);
     $request->execute();
+  }
+
+  private function parseTableDefinition($entity, $callback)
+  {
+    $properties = $this->execute('desc ' . static::TABLE)->fetchAll();
+
+    foreach ($properties as $property) {
+      if (property_exists($entity, $property->Field)) {
+        $callback($property->Field, reset(explode('(', $property->Type)));
+      }
+    }
   }
 
   public function update($entity)
