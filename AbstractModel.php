@@ -14,8 +14,8 @@ abstract class AbstractModel
 
   public function __set($property, $value)
   {
-    if (!in_array($propety, $this->private_properties) && property_exists($this->properties, $property)) {
-      $this->properties->{$property} = $value;
+    if (!in_array($property, $this->private_properties) && property_exists($this->properties, $property)) {
+      $this->properties->$property = $value;
     }
     return $this;
   }
@@ -33,5 +33,14 @@ abstract class AbstractModel
     foreach ($this->private_properties as $property) {
       unset($values[$property]);
     }
+  }
+
+  public function getEntity()
+  {
+    $data = (array)$this->properties;
+    foreach ($this->private_properties as $property) {
+      unset($values[$property]);
+    }
+    return (object)$data;
   }
 }

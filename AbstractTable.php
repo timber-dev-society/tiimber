@@ -2,6 +2,7 @@
 namespace KissPHP;
 
 use KissPHP\Sql;
+use KissPHP\AbstractModel;
 
 abstract class AbstractTable
 {
@@ -25,6 +26,15 @@ abstract class AbstractTable
     $this->onLoad($obj);
 
     return $obj;
+  }
+
+  public function hydrateCollection($collection)
+  {
+    foreach ($collection as $key => $value) {
+      $collection[$key] = $this->hydrate($value);
+    }
+
+    return $collection;
   }
 
   public function save()
@@ -67,14 +77,15 @@ abstract class AbstractTable
 
   public function findAll()
   {
-    $sql = 'SELECT * FROM ' . static::TABLE;
-    $values = $this->execute($sql)->fetchAll();
+    $query = 'SELECT * FROM ' . static::TABLE;
+    $values = $this->execute($query)->fetchAll();
 
-    foreach ($values as $key => $value) {
-      $values[$key] = $this->hydrate($value);
-    }
+    return $this->hydrateCollection($values);
+  }
 
-    return $values;
+  public function paginate($query, $page = 0, $limite = 10)
+  {
+
   }
 
   public function execute($sql)
@@ -130,9 +141,43 @@ abstract class AbstractTable
     }
   }
 
+   /**
+   * update() $entity, an array of data to update.
+   */
   public function update($entity)
   {
     $this->beforeUpdate($entity);
+    $data = [];
+    if ($entity instanceof AbstractModel) {
+      $entity = $entity->getEntity();
+    }
+    if (is_array($entity)) {
+      $entity = (object)$entity;
+    }
+
+    $this->parseTableDefinition($entity, function ($field, $type) use ($entity, &$data) {
+      if (in_array($type, self::$stringTypes)) {
+        $data[] = $field . '="' . addslashes($entity->{$field}) . '"';
+      } else {
+        $data[] = $field . '=' . $entity->{$field};
+      }
+    });
+
+    $data = implode(', ', $data);
+    $sql = 'UPDATE ' . static::TABLE . ' SET ' . $data . ' WHERE id=' . $entity->id;
+
+    $request = Sql::connect()->prepare($sql);
+    $request->execute();
+  }
+
+  /**
+   * deleteEntity() $id: remove the entity from table where $id
+   */
+  public function deleteEntity($id)
+  {
+    $sql = 'DELETE FROM ' . static::TABLE . ' WHERE id = '. $id;
+    $request = Sql::connect()->prepare($sql);
+    $request->execute();
   }
 
   public function dateNow()
