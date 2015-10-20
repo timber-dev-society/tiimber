@@ -83,9 +83,28 @@ abstract class AbstractTable
     return $this->hydrateCollection($values);
   }
 
-  public function paginate($query, $page = 0, $limite = 10)
+  public function findLast()
   {
+    $query = 'SELECT * FROM ' . static::TABLE . ' ORDER BY id';
+    $values = $this->execute($query)->fetch();
 
+    return $this->hydrate($values);
+  }
+
+  public function paginate($query, $page = 1, $limite = 10)
+  {
+    $page = $page - 1;
+    if ($query == null) {
+      $query = 'SELECT * FROM ' . static::TABLE;
+    }
+
+    $query .= ' LIMIT ' . $limite;
+    if ($page != 0) {
+      $query .= ' OFFSET ' . $page;
+    }
+
+    $values = $this->execute($query)->fetchAll();
+    return $this->hydrateCollection($values);
   }
 
   public function execute($sql)
@@ -114,7 +133,6 @@ abstract class AbstractTable
     $entity = (object)$entity;
     $this->beforeCreate($entity);
     $properties = $this->execute('desc ' . static::TABLE)->fetchAll();
-
     $this->parseTableDefinition($entity, function ($field, $type) use ($entity) {
       if (in_array($type, self::$stringTypes)) {
         $entity->{$field} = '"' . addslashes($entity->{$field}) . '"';
@@ -128,17 +146,8 @@ abstract class AbstractTable
 
     $request = Sql::connect()->prepare($sql);
     $request->execute();
-  }
 
-  private function parseTableDefinition($entity, $callback)
-  {
-    $properties = $this->execute('desc ' . static::TABLE)->fetchAll();
-
-    foreach ($properties as $property) {
-      if (property_exists($entity, $property->Field)) {
-        $callback($property->Field, reset(explode('(', $property->Type)));
-      }
-    }
+    return $this;
   }
 
    /**
@@ -195,5 +204,16 @@ abstract class AbstractTable
 
   public function onLoad($entity)
   {
+  }
+
+  private function parseTableDefinition($entity, $callback)
+  {
+    $properties = $this->execute('desc ' . static::TABLE)->fetchAll();
+
+    foreach ($properties as $property) {
+      if (property_exists($entity, $property->Field)) {
+        $callback($property->Field, reset(explode('(', $property->Type)));
+      }
+    }
   }
 }
