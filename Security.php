@@ -3,6 +3,7 @@ namespace KissPHP;
 
 use KissPHP\Tables\Users as UserTable;
 use KissPHP\Models\User as User;
+use KissPHP\Session as Session;
 
 class Security
 {
@@ -16,7 +17,7 @@ class Security
 
   private function __construct($security = null)
   {
-    session_start();
+    $this->refresh();
   }
 
   public static function load()
@@ -31,7 +32,7 @@ class Security
   {
     $this->user = $user;
     if ($user) {
-      $_SESSION['user_id'] = $user->id;
+      Session::load()->set('user_id', $user->id);
       return true;
     }
 
@@ -41,6 +42,14 @@ class Security
   public function getUser()
   {
     return $this->user;
+  }
+
+  public function getUserInfos()
+  {
+    $infos['isAuthenticated'] = $this->isAuthenticated;
+    $infos['role'] = $this->user->__get('role');
+    $infos['username'] = $this->user->__get('username');
+    return $infos;
   }
 
   public function setSecurityDefinition($security)
@@ -62,16 +71,16 @@ class Security
 
   public function logout()
   {
-    if ($_SESSION['user_id']) {
-      unset($_SESSION['user_id']);
+    if (Session::load()->get('user_id', false)) {
+      Session::load()->destruct('user_id');
     }
   }
 
   private function refresh()
   {
-    if (isset($_SESSION['user_id'])) {
+    if (Session::load()->get('user_id', false)) {
       $table = new UserTable();
-      $this->user = $table->find($_SESSION['user_id']);
+      $this->user = $table->find(Session::load()->get('user_id'));
       $this->isAuthenticated = ($this->user !== null);
     }
   }

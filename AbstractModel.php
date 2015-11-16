@@ -27,6 +27,11 @@ abstract class AbstractModel
     }
   }
 
+  public function __isset($property)
+  {
+    return isset($this->properties->$property);
+  }
+
   public function serialize()
   {
     $values = (array)$this->properties;

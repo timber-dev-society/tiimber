@@ -21,16 +21,15 @@ abstract class AbstractTable
   public function hydrate($values)
   {
     $classname = $this->getNamespace();
+    $this->onLoad($values);
     $obj = new $classname((object)$values);
-
-    $this->onLoad($obj);
 
     return $obj;
   }
 
   public function hydrateCollection($collection)
   {
-    foreach ($collection as $key => $value) {
+    foreach ((array)$collection as $key => $value) {
       $collection[$key] = $this->hydrate($value);
     }
 
@@ -60,7 +59,6 @@ abstract class AbstractTable
     foreach($where as $column => $value) {
       $where[$column] = static::TABLE . '.' . $column . '="' . $value . '"';
     };
-
     $values = $this->execute($sql . implode(' AND ', $where))->fetchAll();
 
     foreach ($values as $key => $value) {
@@ -155,7 +153,6 @@ abstract class AbstractTable
    */
   public function update($entity)
   {
-    $this->beforeUpdate($entity);
     $data = [];
     if ($entity instanceof AbstractModel) {
       $entity = $entity->getEntity();
@@ -163,6 +160,9 @@ abstract class AbstractTable
     if (is_array($entity)) {
       $entity = (object)$entity;
     }
+    $this->beforeUpdate($entity);
+    $id = $entity->id;
+    unset($entity->id);
 
     $this->parseTableDefinition($entity, function ($field, $type) use ($entity, &$data) {
       if (in_array($type, self::$stringTypes)) {
@@ -173,7 +173,7 @@ abstract class AbstractTable
     });
 
     $data = implode(', ', $data);
-    $sql = 'UPDATE ' . static::TABLE . ' SET ' . $data . ' WHERE id=' . $entity->id;
+    $sql = 'UPDATE ' . static::TABLE . ' SET ' . $data . ' WHERE id=' . $id;
 
     $request = Sql::connect()->prepare($sql);
     $request->execute();

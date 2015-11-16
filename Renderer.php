@@ -15,6 +15,9 @@ class Renderer
     if (is_array($arguments) && !empty($arguments)) {
       extract($arguments);
     }
+    $render = function ($tpl, Array $arguments = null) {
+      return call_user_func_array([$this, 'renderTpl'], ['tpl' => $tpl, 'arguments' => $arguments]);
+    };
     $filename = 'Templates' . DIRECTORY_SEPARATOR . $tpl . '.phtml';
 
     include $filename;
