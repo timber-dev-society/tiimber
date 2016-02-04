@@ -103,7 +103,8 @@ class Security
 
   public static function hashPassword($password)
   {
-    return password_hash($password, PASSWORD_BCRYPT, ['salt' => self::load()->config->salt]);
+    return sha1($password . self::load()->config->salt);
+    //return password_hash($password, PASSWORD_BCRYPT, ['salt' => self::load()->config->salt]);
   }
 
   private function autorize($role)
