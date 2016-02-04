@@ -15,7 +15,7 @@ class Request
 
   public $session;
 
-  public $referer;
+  public $referer = null;
 
   public function __construct()
   {
@@ -24,6 +24,8 @@ class Request
     $this->url = $_SERVER['REQUEST_URI'];
     $this->method = $_SERVER['REQUEST_METHOD'];
     $this->cookie = $_COOKIE;
-    $this->referer = $_SERVER['HTTP_REFERER'];
+    if (isset($_SERVER['HTTP_REFERER'])) {
+      $this->referer = $_SERVER['HTTP_REFERER'];
+    }
   }
 }
