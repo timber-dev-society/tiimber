@@ -6,7 +6,7 @@ use KissPHP\AbstractModel;
 
 abstract class AbstractTable
 {
-  private static $stringTypes = ['char', 'varchar', 'text', 'timestamp', 'date', 'enum'];
+  private static $stringTypes = ['char', 'varchar', 'text', 'timestamp', 'date', 'enum', 'datetime'];
 
   public function isNew()
   {
@@ -15,7 +15,7 @@ abstract class AbstractTable
 
   public function getNamespace()
   {
-    return 'KissPHP\\Models\\' . static::ENTITY;
+    return '\\' . static::ENTITY;
   }
 
   public function hydrate($values)
@@ -47,7 +47,7 @@ abstract class AbstractTable
 
   public function find($id)
   {
-    $sql = 'SELECT ' . static::TABLE . '.* FROM ' . static::TABLE . ' WHERE ' . static::TABLE . '.id=' . $id;
+    $sql = 'SELECT ' . static::TABLE . '.* FROM ' . static::TABLE . ' WHERE ' . static::TABLE . '.id="' . $id . '"';
     $values = $this->execute($sql)->fetch();
     return $this->hydrate($values);
   }
@@ -100,15 +100,19 @@ abstract class AbstractTable
     if ($page != 0) {
       $query .= ' OFFSET ' . $page;
     }
-
     $values = $this->execute($query)->fetchAll();
     return $this->hydrateCollection($values);
   }
 
   public function execute($sql)
   {
-    $select = Sql::connect()->query($sql);
-    $select->setFetchMode(\PDO::FETCH_OBJ);
+    try {
+      $select = Sql::connect()->query($sql);
+      $select->setFetchMode(\PDO::FETCH_OBJ);
+    } catch (\Exception $e) {
+      var_dump($sql);
+      throw new Exception($e->getMessage());
+    }
 
     return $select;
   }
@@ -142,8 +146,15 @@ abstract class AbstractTable
 
     $sql = 'INSERT INTO ' . static::TABLE . '(' . $columns . ') VALUES (' . $values .')';
 
-    $request = Sql::connect()->prepare($sql);
-    $request->execute();
+    try {
+      $request = Sql::connect()->prepare($sql);
+      $request->execute();
+    } catch (\Exception $e) {
+      echo($sql);
+      var_dump($e->getMessage());
+      echo($e->getTraceAsString());
+      throw new Exception($e->getMessage());
+    }
 
     return $this;
   }
@@ -165,18 +176,33 @@ abstract class AbstractTable
     unset($entity->id);
 
     $this->parseTableDefinition($entity, function ($field, $type) use ($entity, &$data) {
-      if (in_array($type, self::$stringTypes)) {
-        $data[] = $field . '="' . addslashes($entity->{$field}) . '"';
-      } else {
-        $data[] = $field . '=' . $entity->{$field};
+      if ($entity->{$field} != '' && !is_null($entity->{$field}) && $entity->{$field} != 'N;') {
+        if (in_array($type, self::$stringTypes)) {
+          $data[] = $field . '="' . addslashes($entity->{$field}) . '"';
+        } else {
+          $data[] = $field . '=' . $entity->{$field};
+        }
       }
     });
 
-    $data = implode(', ', $data);
-    $sql = 'UPDATE ' . static::TABLE . ' SET ' . $data . ' WHERE id=' . $id;
+    if (count($data) === 0) {
+      return;
+    }
 
-    $request = Sql::connect()->prepare($sql);
-    $request->execute();
+    $data = implode(', ', $data);
+    $sql = 'UPDATE ' . static::TABLE . ' SET ' . $data . ' WHERE id="' . $id .'"';
+    echo($sql);
+
+
+    try {
+      $request = Sql::connect()->prepare($sql);
+      $request->execute();
+    } catch (\Exception $e) {
+      echo($sql);
+      var_dump($e->getMessage());
+      echo($e->getTraceAsString());
+      throw new Exception($e->getMessage());
+    }
   }
 
   /**

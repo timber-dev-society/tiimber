@@ -3,6 +3,7 @@ namespace KissPHP;
 
 use KissPHP\Security;
 use KissPHP\Render;
+use KissPHP\Config;
 
 class Controller
 {
@@ -12,27 +13,35 @@ class Controller
 
   protected $renderer;
 
-  public function __construct(Array $routes)
+  protected $controllers;
+
+  public function __construct(\stdClass $routes)
   {
     $this->request = new Request();
-    $this->routes = $routes;
+    $this->routes = (array)$routes;
     $arguments = [];
     $route = $this->getRoute($arguments);
 
     if (property_exists($route, 'security')) {
-      $security =  Security::load()->setSecurityDefinition((object)$route->security, $this->request);
+      $securityRule = Config::get('security')->security->{$route->security};
+      $security =  Security::load()->setSecurityDefinition($securityRule);
       if (!$security->isAuthenticated || !$security->isAuthorized) {
-        header('Location: ' . $route->security['redirect']);
+        header('Location: ' . $securityRule->redirect);
       }
     }
     $this->renderer = new Renderer(property_exists($route, 'layout') ? $route->layout : 'default');
+
+    $this->controllers = Config::get('controllers');
 
     return $this->runAction($route->controller, $route->action, $arguments);
   }
 
   public function runAction($controllerName, $action, $arguments)
   {
-    $controller = 'KissPHP\\Controllers\\' . $controllerName;
+    if (!property_exists($this->controllers, $controllerName)) {
+      throw new Exception('No class found into config file for controller: ' . $controllerName);
+    }
+    $controller = '\\' . $this->controllers->{$controllerName};
     $controller = new $controller($this->request, $this->renderer);
     $controller->tpl = $controllerName . DIRECTORY_SEPARATOR . $action;
 
@@ -47,8 +56,8 @@ class Controller
 
   public function getRoute(&$matches)
   {
-    foreach ($this->routes as $pattern => $route) {
-      $pattern = explode('::', $pattern, 2);
+    foreach ($this->routes as $route) {
+      $pattern = explode('::', $route->route, 2);
 
       if (
         (count($pattern) === 1 && $this->urlMatch($pattern[0], $matches)) ||

@@ -15,6 +15,8 @@ class Request
 
   public $session;
 
+  public $referer;
+
   public function __construct()
   {
     $this->post = (object)$_POST;
@@ -22,5 +24,6 @@ class Request
     $this->url = $_SERVER['REQUEST_URI'];
     $this->method = $_SERVER['REQUEST_METHOD'];
     $this->cookie = $_COOKIE;
+    $this->referer = $_SERVER['HTTP_REFERER'];
   }
 }

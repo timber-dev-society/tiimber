@@ -2,8 +2,10 @@
 namespace KissPHP;
 
 use KissPHP\Tables\Users as UserTable;
-use KissPHP\Models\User as User;
-use KissPHP\Session as Session;
+use KissPHP\Models\User;
+
+use KissPHP\Config;
+use KissPHP\Session;
 
 class Security
 {
@@ -13,10 +15,13 @@ class Security
 
   private $user;
 
+  private $config;
+
   private static $instance;
 
-  private function __construct($security = null)
+  private function __construct()
   {
+    $this->config = Config::get('security');
     $this->refresh();
   }
 
@@ -28,10 +33,10 @@ class Security
     return self::$instance;
   }
 
-  public function setUser(User $user)
+  public function setUser($user)
   {
-    $this->user = $user;
     if ($user) {
+      $this->user = $user;
       Session::load()->set('user_id', $user->id);
       return true;
     }
@@ -62,9 +67,9 @@ class Security
 
   public function authenticate($request)
   {
-    $table = new UserTable();
-
-    $user = $table->findOneBy(['username' => $request->post->login, 'password' => $request->post->password]);
+    $namespace = $this->config->user_table_namespace;
+    $table = new $namespace();
+    $user = $table->findOneBy(['username' => $request->post->login, 'password' => self::hashPassword($request->post->password)]);
 
     return $this->setUser($user);
   }
@@ -79,10 +84,26 @@ class Security
   private function refresh()
   {
     if (Session::load()->get('user_id', false)) {
-      $table = new UserTable();
+      $namespace = $this->config->user_table_namespace;
+      $table = new $namespace();
       $this->user = $table->find(Session::load()->get('user_id'));
       $this->isAuthenticated = ($this->user !== null);
     }
+  }
+
+  public function isAuthenticated($role = false)
+  {
+    if ($role) {
+      $this->autorize($role);
+      return $this->isAuthenticated && $this->isAuthorized;
+    }
+
+    return $this->isAuthenticated;
+  }
+
+  public static function hashPassword($password)
+  {
+    return password_hash($password, PASSWORD_BCRYPT, ['salt' => self::load()->config->salt]);
   }
 
   private function autorize($role)

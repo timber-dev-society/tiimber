@@ -2,6 +2,8 @@
 namespace KissPHP;
 
 use PDO;
+use KissPHP\Config;
+use KissPHP\Exception;
 
 class Sql
 {
@@ -9,16 +11,18 @@ class Sql
 
   private static $instance;
 
+  private $config;
+
   private function __construct()
   {
     $optn = array(
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+      PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
     );
+    $this->config = Config::get('database');
     try {
-      $this->connection = new PDO('mysql:host=localhost;dbname=takaclic;charset=utf8', 'dious', '', $optn);
+      $this->connection = new PDO('mysql:host=' . $this->config->host . ';dbname=' . $this->config->dbname . ';charset=' . $this->config->charset, $this->config->login, $this->config->password, $optn);
     } catch (\Exception $e) {
-      echo 'Connection impossible : ', $e->getMessage();
-      die();
+      throw new Exception($e->getMessage());
     }
   }
 
@@ -32,6 +36,11 @@ class Sql
 
   public function __call($method, $arguments)
   {
-    return call_user_func_array([$this->connection, $method], $arguments);
+    try {
+      return call_user_func_array([$this->connection, $method], $arguments);
+    } catch (\Exception $e) {
+      var_dump($method, $arguments);
+      throw new Exception($e->getMessage());
+    }
   }
 }

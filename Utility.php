@@ -22,4 +22,11 @@ class Utility
   {
     return strlen($text) > $maxSize ? substr($text, 0, $maxSize) . '...' : $text;
   }
+
+  public static function t($text)
+  {
+    if ($text === 'dashboard') {
+      return 'Tableau de bord';
+    }
+  }
 }
