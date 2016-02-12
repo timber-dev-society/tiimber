@@ -2,6 +2,7 @@
 namespace KissPHP;
 
 use KissPHP\Sql;
+use KissPHP\SqlException;
 use KissPHP\AbstractModel;
 
 abstract class AbstractTable
@@ -110,8 +111,7 @@ abstract class AbstractTable
       $select = Sql::connect()->query($sql);
       $select->setFetchMode(\PDO::FETCH_OBJ);
     } catch (\Exception $e) {
-      var_dump($sql);
-      throw new Exception($e->getMessage());
+      throw new SqlException($e->getMessage(), $sql);
     }
 
     return $select;
@@ -150,10 +150,7 @@ abstract class AbstractTable
       $request = Sql::connect()->prepare($sql);
       $request->execute();
     } catch (\Exception $e) {
-      echo($sql);
-      var_dump($e->getMessage());
-      echo($e->getTraceAsString());
-      throw new Exception($e->getMessage());
+      throw new SqlException($e->getMessage(), $sql);
     }
 
     return $this;
@@ -198,10 +195,7 @@ abstract class AbstractTable
       $request = Sql::connect()->prepare($sql);
       $request->execute();
     } catch (\Exception $e) {
-      echo($sql);
-      var_dump($e->getMessage());
-      echo($e->getTraceAsString());
-      throw new Exception($e->getMessage());
+      throw new SqlException($e->getMessage(), $sql);
     }
   }
 

@@ -39,7 +39,6 @@ class Sql
     try {
       return call_user_func_array([$this->connection, $method], $arguments);
     } catch (\Exception $e) {
-      var_dump($method, $arguments);
       throw new Exception($e->getMessage());
     }
   }

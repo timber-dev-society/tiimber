@@ -19,7 +19,7 @@ abstract class AbstractController
 
   public function render(Array $arguments = null)
   {
-    $this->renderer->render($this->tpl, $arguments);
+    return $this->renderer->render($this->tpl, $arguments);
   }
 
   public function beforeAction($action)

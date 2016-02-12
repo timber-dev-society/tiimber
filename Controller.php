@@ -33,7 +33,7 @@ class Controller
 
     $this->controllers = Config::get('controllers');
 
-    return $this->runAction($route->controller, $route->action, $arguments);
+    echo $this->runAction($route->controller, $route->action, $arguments);
   }
 
   public function runAction($controllerName, $action, $arguments)
