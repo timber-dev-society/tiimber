@@ -188,8 +188,6 @@ abstract class AbstractTable
 
     $data = implode(', ', $data);
     $sql = 'UPDATE ' . static::TABLE . ' SET ' . $data . ' WHERE id="' . $id .'"';
-    echo($sql);
-
 
     try {
       $request = Sql::connect()->prepare($sql);
