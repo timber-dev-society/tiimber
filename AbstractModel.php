@@ -7,9 +7,9 @@ abstract class AbstractModel
 
   protected $private_properties = [];
 
-  public function __construct(\stdClass $properties)
+  public function __construct($properties)
   {
-    $this->properties = $properties;
+    $this->properties = (object)$properties;
   }
 
   public function __set($property, $value)
