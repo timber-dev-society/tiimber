@@ -19,11 +19,16 @@ class Request
 
   public function __construct()
   {
-    $this->post = (object)$_POST;
-    $this->get = (object)$_GET;
-    $this->url = $_SERVER['REQUEST_URI'];
+    $this->post = new ParameterBag($_POST);
+    $this->get = new ParameterBag($_GET);
+    if ($_SERVER['QUERY_STRING']) {
+      $pos = strpos($_SERVER['REQUEST_URI'], $_SERVER['QUERY_STRING']);
+      $this->url  = substr($_SERVER['REQUEST_URI'], 0, $pos - 1);
+    } else {
+      $this->url = $_SERVER['QUERY_STRING'];
+    }
     $this->method = $_SERVER['REQUEST_METHOD'];
-    $this->cookie = $_COOKIE;
+    $this->cookie = new ParameterBag($_COOKIE);
     if (isset($_SERVER['HTTP_REFERER'])) {
       $this->referer = $_SERVER['HTTP_REFERER'];
     }

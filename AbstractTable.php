@@ -99,7 +99,7 @@ abstract class AbstractTable
 
     $query .= ' LIMIT ' . $limite;
     if ($page != 0) {
-      $query .= ' OFFSET ' . $page;
+      $query .= ' OFFSET ' . ($page * $limite);
     }
     $values = $this->execute($query)->fetchAll();
     return $this->hydrateCollection($values);
