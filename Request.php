@@ -25,7 +25,7 @@ class Request
       $pos = strpos($_SERVER['REQUEST_URI'], $_SERVER['QUERY_STRING']);
       $this->url  = substr($_SERVER['REQUEST_URI'], 0, $pos - 1);
     } else {
-      $this->url = $_SERVER['QUERY_STRING'];
+      $this->url = $_SERVER['REQUEST_URI'];
     }
     $this->method = $_SERVER['REQUEST_METHOD'];
     $this->cookie = new ParameterBag($_COOKIE);
