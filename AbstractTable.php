@@ -120,7 +120,7 @@ abstract class AbstractTable
 
   public function createFromPost($request)
   {
-    $values = $request->post->getIterator();
+    $values = $request->post;
     $properties = $this->execute('desc ' . static::TABLE)->fetchAll();
 
     $entity = new \stdClass();
@@ -165,11 +165,10 @@ abstract class AbstractTable
   {
     $data = [];
 
-    if ($entity instanceof ParameterBag) {
-      $entity = $entity->getIterator();
-    } elseif ($entity instanceof AbstractModel) {
+    if ($entity instanceof AbstractModel) {
       $entity = $entity->getEntity();
-    } elseif (is_array($entity)) {
+    }
+    if (is_array($entity)) {
       $entity = (object)$entity;
     }
     $this->beforeUpdate($entity);

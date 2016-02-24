@@ -19,7 +19,7 @@ class Request
 
   public function __construct()
   {
-    $this->post = new ParameterBag($_POST);
+    $this->post = (object)$_POST;
     $this->get = new ParameterBag($_GET);
     if ($_SERVER['QUERY_STRING']) {
       $pos = strpos($_SERVER['REQUEST_URI'], $_SERVER['QUERY_STRING']);
