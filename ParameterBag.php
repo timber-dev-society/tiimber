@@ -18,6 +18,6 @@ class ParameterBag extends AbstractModel implements \IteratorAggregate
 
   public function getIterator()
   {
-    return $this->properties;
+    return new \ArrayIterator($this->properties);
   }
 }
