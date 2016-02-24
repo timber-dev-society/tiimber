@@ -119,7 +119,7 @@ abstract class AbstractTable
 
   public function createFromPost($request)
   {
-    $values = $request->post;
+    $values = $request->post->getIterator();
     $properties = $this->execute('desc ' . static::TABLE)->fetchAll();
 
     $entity = new \stdClass();
@@ -135,6 +135,7 @@ abstract class AbstractTable
     $entity = (object)$entity;
     $this->beforeCreate($entity);
     $properties = $this->execute('desc ' . static::TABLE)->fetchAll();
+
     $this->parseTableDefinition($entity, function ($field, $type) use ($entity) {
       if (in_array($type, self::$stringTypes)) {
         $entity->{$field} = '"' . addslashes($entity->{$field}) . '"';
@@ -144,7 +145,7 @@ abstract class AbstractTable
     $columns = implode(', ', array_keys((array)$entity));
     $values = implode(', ', (array)$entity);
 
-    $sql = 'INSERT INTO ' . static::TABLE . '(' . $columns . ') VALUES (' . $values .')';
+    $sql = 'INSERT INTO ' . static::TABLE . ' (' . $columns . ') VALUES (' . $values .')';
 
     try {
       $request = Sql::connect()->prepare($sql);

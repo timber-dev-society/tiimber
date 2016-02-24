@@ -14,7 +14,7 @@ abstract class AbstractModel
 
   public function __set($property, $value)
   {
-    if (!in_array($property, $this->private_properties) && property_exists($this->properties, $property)) {
+    if (!in_array($property, $this->private_properties)) {
       $this->properties->$property = $value;
     }
     return $this;
