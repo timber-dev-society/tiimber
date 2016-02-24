@@ -4,6 +4,7 @@ namespace KissPHP;
 use KissPHP\Sql;
 use KissPHP\SqlException;
 use KissPHP\AbstractModel;
+use KissPHP\ParameterBag;
 
 abstract class AbstractTable
 {
@@ -163,10 +164,12 @@ abstract class AbstractTable
   public function update($entity)
   {
     $data = [];
-    if ($entity instanceof AbstractModel) {
+
+    if ($entity instanceof ParameterBag) {
+      $entity = $entity->getIterator();
+    } elseif ($entity instanceof AbstractModel) {
       $entity = $entity->getEntity();
-    }
-    if (is_array($entity)) {
+    } elseif (is_array($entity)) {
       $entity = (object)$entity;
     }
     $this->beforeUpdate($entity);
