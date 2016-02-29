@@ -1,36 +1,37 @@
 <?php
 namespace KissPHP;
 
-use KissPHP\Application;
-
 class Mailer
 {
-  //-setFrom(array('john@doe.com' => 'John Doe')
-  public function __construct($sendTo, $sendFrom, $subject, $message) {
+  private static $instance;
 
-    //SI plusieurs ARRAY $sendTo -> Envoi à plusieurs personnes
+  private $driver;
 
-    $mail = Swift_Message::newInstance($subject)
-    ->setFrom($sendFrom)
-    ->setTo($sendTo)
-    ->setBody($message)
-    ;
+  private function __construct()
+  {
+    $config = Config::get('mailer');
 
+    if (!$config) {
+      throw new Exception('No mailer configuration');
+    }
 
-    // Send the message
-    $result = $mailer->send($mail);
+    $driver = '\\' . $config->driver;
+    $this->driver = new $driver();
+
+    if (!$this->driver instanceof MailDriverInterface) {
+      throw new Exception($driver . ' must implement MailDriverInterface');
+    }
+    $this->driver->setConfig((array)$config);
   }
 
-  private function send ($mail) {
-
-    $transport = Swift_SmtpTransport::newInstance('smtp.example.org', 25)
-    ->setUsername('your username')
-    ->setPassword('your password')
-    ;
-
-    $mailer = Swift_Mailer::newInstance($transport);
-
-    // Send the message
-    $result = $mailer->send($message);
+  /**
+   * @return MailDriverInterface;
+   */
+  public static function newMail()
+  {
+    if (!self::$instance) {
+      self::$instance = new self();
+    }
+    return self::$instance->driver;
   }
 }
