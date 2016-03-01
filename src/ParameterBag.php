@@ -1,8 +1,18 @@
 <?php
 namespace KissPHP;
 
-class ParameterBag extends AbstractModel implements \IteratorAggregate
+use ArrayIterator;
+use IteratorAggregate;
+
+class ParameterBag extends AbstractModel implements IteratorAggregate
 {
+  /**
+   * Get object parameter
+   *
+   * @param $key String
+   * @param $default mixed
+   * @return mixed
+   */
   public function get($key, $default = null)
   {
     if (isset($this->{$key})) {
@@ -11,13 +21,22 @@ class ParameterBag extends AbstractModel implements \IteratorAggregate
     return $default;
   }
 
+  /**
+   * Set object parameter
+   *
+   * @param $key String
+   * @param $value mixed
+   */
   public function set($key, $value)
   {
     $this->{$key} = $value;
   }
 
+  /**
+   * @return ArrayIterator
+   */
   public function getIterator()
   {
-    return new \ArrayIterator($this->properties);
+    return new ArrayIterator($this->properties);
   }
 }
