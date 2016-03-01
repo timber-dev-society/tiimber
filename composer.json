@@ -1,0 +1,24 @@
+{
+    "name": "ndufreche/kissphp",
+    "description": "framework",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dufreche",
+            "email": "n.dufreche@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "KissPHP\\Tests\\": "test/",
+            "KissPHP\\": "src/"
+        }
+    },
+    "require": {
+        "psr/log": "^1.0",
+        "psr/http-message": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8"
+    }
+}

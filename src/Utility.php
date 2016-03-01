@@ -10,8 +10,7 @@ class Utility
     $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
     $text = strtolower($text);
     $text = preg_replace('~[^-\w]+~', '', $text);
-    if (empty($text))
-    {
+    if (empty($text)) {
       return 'n-a';
     }
 
