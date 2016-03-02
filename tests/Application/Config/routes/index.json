@@ -1,0 +1,12 @@
+{
+  "route_with_param": {
+    "route": "/(.+)",
+    "controller": "Index",
+    "action": "routeWithParam"
+  },
+  "basic_route": {
+    "route": "/",
+    "controller": "Index",
+    "action": "index"
+  }
+}

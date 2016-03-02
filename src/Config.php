@@ -3,6 +3,7 @@ namespace KissPHP;
 
 use KissPHP\Application;
 use KissPHP\Exception;
+use KissPHP\ParameterBag;
 
 class Config
 {
@@ -12,10 +13,17 @@ class Config
 
   private function __construct()
   {
-    $this->loadConfigFile();
-    $this->loadConfigFolder();
+    $this->loadConfigFiles();
+    $this->loadConfigFolders();
   }
 
+  /**
+   * Get the config file
+   *
+   * @param String $key config file or folder name
+   * @param mixed $default
+   * @return \stdClass
+   */
   public static function get($key, $default = null)
   {
     if (!self::$instance) {
@@ -37,15 +45,15 @@ class Config
     return $content;
   }
 
-  private function loadConfigFile()
+  private function loadConfigFiles()
   {
     $files = glob($this->getConfigdir() . '*.json', GLOB_BRACE);
     foreach($files as $file) {
-      $this->config[basename($file, '.json')] = $this->readJsonFile($file);
+      $this->config[basename($file, '.json')] = new ParameterBag($this->readJsonFile($file));
     }
   }
 
-  private function loadConfigFolder()
+  private function loadConfigFolders()
   {
     $folders = array_diff(scandir($this->getConfigdir()), ['..', '.']);
 
@@ -58,7 +66,7 @@ class Config
       foreach($files as $file) {
         $content = array_merge($content, (array)$this->readJsonFile($file));
       }
-      $this->config[basename($folder)] = (object)$content;
+      $this->config[basename($folder)] = new ParameterBag($content);
     }
   }
 
