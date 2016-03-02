@@ -4,6 +4,7 @@ namespace KissPHP;
 use KissPHP\Security;
 use KissPHP\Render;
 use KissPHP\Config;
+use KissPHP\ParameterBag;
 
 class Controller
 {
@@ -15,7 +16,7 @@ class Controller
 
   protected $controllers;
 
-  public function __construct(\stdClass $routes)
+  public function __construct(ParameterBag $routes)
   {
     $this->request = new Request();
     $this->routes = (array)$routes;
