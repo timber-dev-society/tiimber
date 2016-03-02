@@ -19,7 +19,7 @@ class Controller
   public function __construct(ParameterBag $routes)
   {
     $this->request = new Request();
-    $this->routes = (array)$routes;
+    $this->routes = $routes;
     $arguments = [];
     $route = $this->getRoute($arguments);
 
@@ -39,7 +39,7 @@ class Controller
 
   public function runAction($controllerName, $action, $arguments)
   {
-    if (!property_exists($this->controllers, $controllerName)) {
+    if (!isset($this->controllers->{$controllerName})) {
       throw new Exception('No class found into config file for controller: ' . $controllerName);
     }
     $controller = '\\' . $this->controllers->{$controllerName};
