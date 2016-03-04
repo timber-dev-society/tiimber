@@ -1,9 +1,13 @@
 <?php
 namespace Tiimber;
 
+use Tiimber\Interfaces\HelperInterface;
+
 class Renderer
 {
   public $layout;
+
+  const TEMPLATE_EXTENSION = 'phtml';
 
   public function __construct($layout)
   {
@@ -17,7 +21,7 @@ class Renderer
       extract($arguments);
     }
     $render = $this->getRenderFunction();
-    $filename = 'Templates' . DIRECTORY_SEPARATOR . $tpl . '.phtml';
+    $filename = 'Templates' . DIRECTORY_SEPARATOR . $tpl . '.' . static::TEMPLATE_EXTENSION;
 
     ob_start();
     include $filename;
@@ -30,7 +34,7 @@ class Renderer
 
     $render = $this->getRenderFunction();
     ob_start();
-    include 'Templates' . DIRECTORY_SEPARATOR . 'Layouts' . DIRECTORY_SEPARATOR . $this->layout . '.phtml';
+    include 'Templates' . DIRECTORY_SEPARATOR . 'Layouts' . DIRECTORY_SEPARATOR . $this->layout . '.' . static::TEMPLATE_EXTENSION;
     return ob_get_clean();
   }
 
@@ -48,7 +52,7 @@ class Renderer
       return $helper->render();
     }
 
-    throw new Exception($helper . ' doesn\'t implement HelperInterface');
+    throw new Exception($helper . ' must implement HelperInterface');
   }
 
   private function getRenderFunction()

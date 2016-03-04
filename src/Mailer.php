@@ -1,6 +1,8 @@
 <?php
 namespace Tiimber;
 
+use Tiimber\Interfaces\MailDriverInterface;
+
 class Mailer
 {
   private static $instance;

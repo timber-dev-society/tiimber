@@ -1,5 +1,5 @@
 <?php
-namespace Tiimber;
+namespace Tiimber\Interfaces;
 
 use Tiimber\Renderer;
 

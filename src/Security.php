@@ -1,17 +1,17 @@
 <?php
 namespace Tiimber;
 
-use Tiimber\Tables\Users as UserTable;
-use Tiimber\Models\User;
+use Tiimber\Interfaces\UserSecurityInterface;
+use Tiimber\Interfaces\SecurityProviderInterface;
 
 use Tiimber\Config;
 use Tiimber\Session;
 
 class Security
 {
-  public $isAuthenticated = false;
+  private $isAuthenticated = false;
 
-  public $isAuthorized = false;
+  private $isAuthorized = false;
 
   private $user;
 
@@ -19,10 +19,25 @@ class Security
 
   private static $instance;
 
+  private static $accessibleProperties = [
+    'isAuthenticated',
+    'isAuthorized'
+  ];
+
+  const SESSION_ID = 'user_identifier';
+
   private function __construct()
   {
     $this->config = Config::get('security');
     $this->refresh();
+  }
+
+  public function __get($property)
+  {
+    if (in_array($property, static::$accessibleProperties)) {
+      return $this->{$property};
+    }
+    return null;
   }
 
   public static function load()
@@ -35,9 +50,9 @@ class Security
 
   public function setUser($user)
   {
-    if ($user) {
+    if ($user instanceof UserSecurityInterface) {
       $this->user = $user;
-      Session::load()->set('user_id', $user->id);
+      Session::load()->set(static::SESSION_ID, $user->getIndentifier());
       return true;
     }
 
@@ -52,8 +67,8 @@ class Security
   public function getUserInfos()
   {
     $infos['isAuthenticated'] = $this->isAuthenticated;
-    $infos['role'] = $this->user->__get('role');
-    $infos['username'] = $this->user->__get('username');
+    $infos['role'] = $this->user->getRole();
+    $infos['username'] = $this->user->getUsername();
     return $infos;
   }
 
@@ -69,24 +84,30 @@ class Security
   {
     $namespace = $this->config->user_table_namespace;
     $table = new $namespace();
-    $user = $table->findOneBy(['username' => $request->post->login, 'password' => self::hashPassword($request->post->password)]);
+    if (!$table instanceof SecurityProviderInterface) {
+      throw new Exception($namespace . ' must implement Tiimber\Interfaces\SecurityProviderInterface');
+    }
+    $user = $table->loadUserByUsernamePassword($request->post->login, self::hashPassword($request->post->password));
 
     return $this->setUser($user);
   }
 
   public function logout()
   {
-    if (Session::load()->get('user_id', false)) {
-      Session::load()->destruct('user_id');
+    if (Session::load()->get(static::SESSION_ID, false)) {
+      Session::load()->destruct(static::SESSION_ID);
     }
   }
 
   private function refresh()
   {
-    if (Session::load()->get('user_id', false)) {
+    if (Session::load()->get(static::SESSION_ID, false)) {
       $namespace = $this->config->user_table_namespace;
       $table = new $namespace();
-      $this->user = $table->find(Session::load()->get('user_id'));
+      if (!$table instanceof SecurityProviderInterface) {
+        throw new Exception($namespace . ' must implement Tiimber\Interfaces\SecurityProviderInterface');
+      }
+      $this->user = $table->loadUserByIdentifier(Session::load()->get(static::SESSION_ID));
       $this->isAuthenticated = ($this->user !== null);
     }
   }

@@ -1,5 +1,5 @@
 <?php
-namespace Tiimber;
+namespace Tiimber\Interfaces;
 
 /**
  * To: recipients -- the primary recipients (required)
