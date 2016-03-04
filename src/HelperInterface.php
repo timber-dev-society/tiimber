@@ -1,7 +1,7 @@
 <?php
-namespace KissPHP;
+namespace Tiimber;
 
-use KissPHP\Renderer;
+use Tiimber\Renderer;
 
 interface HelperInterface
 {

@@ -1,10 +1,10 @@
 <?php
-namespace KissPHP;
+namespace Tiimber;
 
-use KissPHP\Security;
-use KissPHP\Render;
-use KissPHP\Config;
-use KissPHP\ParameterBag;
+use Tiimber\Security;
+use Tiimber\Render;
+use Tiimber\Config;
+use Tiimber\ParameterBag;
 
 class Controller
 {

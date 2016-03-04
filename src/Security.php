@@ -1,11 +1,11 @@
 <?php
-namespace KissPHP;
+namespace Tiimber;
 
-use KissPHP\Tables\Users as UserTable;
-use KissPHP\Models\User;
+use Tiimber\Tables\Users as UserTable;
+use Tiimber\Models\User;
 
-use KissPHP\Config;
-use KissPHP\Session;
+use Tiimber\Config;
+use Tiimber\Session;
 
 class Security
 {

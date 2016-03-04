@@ -1,8 +1,8 @@
 <?php
-namespace KissPHP;
+namespace Tiimber;
 
-use KissPHP\Config;
-use KissPHP\Controller;
+use Tiimber\Config;
+use Tiimber\Controller;
 
 class Application
 {

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d1b01c95d95a5efe5a6235da9fcc961b",
-    "content-hash": "dbd08d14006fa08617aecdabc3df4bf2",
+    "hash": "dac23469eac7cc0276f71f71721ec7f0",
+    "content-hash": "d52a9abf36d8b4c2fae1d46f675aaca1",
     "packages": [
         {
             "name": "psr/http-message",

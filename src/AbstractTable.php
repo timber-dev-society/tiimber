@@ -1,10 +1,10 @@
 <?php
-namespace KissPHP;
+namespace Tiimber;
 
-use KissPHP\Sql;
-use KissPHP\SqlException;
-use KissPHP\AbstractModel;
-use KissPHP\ParameterBag;
+use Tiimber\Sql;
+use Tiimber\SqlException;
+use Tiimber\AbstractModel;
+use Tiimber\ParameterBag;
 
 abstract class AbstractTable
 {

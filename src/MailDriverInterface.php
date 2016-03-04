@@ -1,5 +1,5 @@
 <?php
-namespace KissPHP;
+namespace Tiimber;
 
 /**
  * To: recipients -- the primary recipients (required)

@@ -1,7 +1,7 @@
 <?php
-namespace KissPHP;
+namespace Tiimber;
 
-use KissPHP\Application;
+use Tiimber\Application;
 
 class Exception extends \Exception
 {

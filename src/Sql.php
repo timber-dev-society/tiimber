@@ -1,9 +1,9 @@
 <?php
-namespace KissPHP;
+namespace Tiimber;
 
 use PDO;
-use KissPHP\Config;
-use KissPHP\Exception;
+use Tiimber\Config;
+use Tiimber\Exception;
 
 class Sql
 {

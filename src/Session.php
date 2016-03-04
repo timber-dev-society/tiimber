@@ -1,6 +1,6 @@
 <?php
 
-namespace KissPHP;
+namespace Tiimber;
 
 class Session
 {

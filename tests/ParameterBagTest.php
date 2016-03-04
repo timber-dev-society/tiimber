@@ -1,7 +1,7 @@
 <?php
-namespace KissPHP\Tests;
+namespace Tiimber\Tests;
 
-use KissPHP\ParameterBag;
+use Tiimber\ParameterBag;
 
 use PHPUnit_Framework_TestCase;
 

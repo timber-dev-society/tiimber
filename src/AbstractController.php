@@ -1,7 +1,7 @@
 <?php
-namespace KissPHP;
+namespace Tiimber;
 
-use KissPHP\Utility;
+use Tiimber\Utility;
 
 abstract class AbstractController
 {

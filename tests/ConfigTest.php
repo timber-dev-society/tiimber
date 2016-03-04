@@ -1,9 +1,9 @@
 <?php
-namespace KissPHP\Tests;
+namespace Tiimber\Tests;
 
-use KissPHP\Application;
-use KissPHP\Config;
-use KissPHP\ParameterBag;
+use Tiimber\Application;
+use Tiimber\Config;
+use Tiimber\ParameterBag;
 
 use PHPUnit_Framework_TestCase;
 
@@ -20,8 +20,8 @@ class ConfigTest extends PHPUnit_Framework_TestCase
   public function testLoadConfigFiles()
   {
     $value = Config::get('controllers');
-    $this->assertInstanceOf('KissPHP\\ParameterBag', $value);
-    $this->assertEquals('KissPHP\\Tests\\Application\\Controllers\\Index', $value->get('Index'));
+    $this->assertInstanceOf('Tiimber\\ParameterBag', $value);
+    $this->assertEquals('Tiimber\\Tests\\Application\\Controllers\\Index', $value->get('Index'));
   }
 
   public function testLoadConfigFolders()

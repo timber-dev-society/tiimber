@@ -1,7 +1,7 @@
 <?php
-namespace KissPHP\Tests;
+namespace Tiimber\Tests;
 
-use KissPHP\Utility;
+use Tiimber\Utility;
 
 use PHPUnit_Framework_TestCase;
 

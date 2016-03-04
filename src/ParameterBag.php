@@ -1,5 +1,5 @@
 <?php
-namespace KissPHP;
+namespace Tiimber;
 
 use ArrayIterator;
 use IteratorAggregate;

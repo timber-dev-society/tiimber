@@ -1,5 +1,5 @@
 {
-    "name": "ndufreche/kissphp",
+    "name": "ndufreche/tiimber",
     "description": "framework",
     "license": "MIT",
     "authors": [
@@ -10,8 +10,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "KissPHP\\Tests\\": "test/",
-            "KissPHP\\": "src/"
+            "Tiimber\\Tests\\": "test/",
+            "Tiimber\\": "src/"
         }
     },
     "require": {

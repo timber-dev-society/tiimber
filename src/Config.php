@@ -1,9 +1,9 @@
 <?php
-namespace KissPHP;
+namespace Tiimber;
 
-use KissPHP\Application;
-use KissPHP\Exception;
-use KissPHP\ParameterBag;
+use Tiimber\Application;
+use Tiimber\Exception;
+use Tiimber\ParameterBag;
 
 class Config
 {
