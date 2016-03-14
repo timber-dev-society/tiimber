@@ -27,9 +27,21 @@ class Application
     $routes = Config::get('routes', []);
     new Controller($routes);
   }
+  
+  public function setConfigDir($dir)
+  {
+    if (!$this->config_dir) {
+      $this->config_dir =  $dir;
+    }
+  }
 
   public function getBaseDir()
   {
     return self::$instance->dir;
+  }
+  
+  public function getConfigDir()
+  {
+    return self::$instance->config_dir ?: self::$instance->dir;
   }
 }

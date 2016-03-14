@@ -15,6 +15,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
   {
     $application = new Application();
     $application->setBaseDir(__DIR__ . '/Application');
+    $application->setConfigDir(__DIR__);
   }
 
   public function testLoadConfigFiles()
