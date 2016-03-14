@@ -23,7 +23,7 @@ class Mailer
     if (!$this->driver instanceof MailDriverInterface) {
       throw new Exception($driver . ' must implement MailDriverInterface');
     }
-    $this->driver->setConfig((array)$config);
+    $this->driver->setConfig($config);
   }
 
   /**
