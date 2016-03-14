@@ -8,7 +8,7 @@ interface UserSecurityInterface
    *
    * @return Integer|String
    */
-  public function getIndentifier();
+  public function getIdentifier();
 
   /**
    * Return if the user get the researched role
