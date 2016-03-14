@@ -21,7 +21,7 @@ class Renderer
       extract($arguments);
     }
     $render = $this->getRenderFunction();
-    $filename = 'Templates' . DIRECTORY_SEPARATOR . $tpl . '.' . static::TEMPLATE_EXTENSION;
+    $filename = Application::getBaseDir() . DIRECTORY_SEPARATOR . 'Templates' . DIRECTORY_SEPARATOR . $tpl . '.' . static::TEMPLATE_EXTENSION;
 
     ob_start();
     include $filename;
@@ -34,7 +34,7 @@ class Renderer
 
     $render = $this->getRenderFunction();
     ob_start();
-    include 'Templates' . DIRECTORY_SEPARATOR . 'Layouts' . DIRECTORY_SEPARATOR . $this->layout . '.' . static::TEMPLATE_EXTENSION;
+    include  Application::getBaseDir() . DIRECTORY_SEPARATOR .'Templates' . DIRECTORY_SEPARATOR . 'Layouts' . DIRECTORY_SEPARATOR . $this->layout . '.' . static::TEMPLATE_EXTENSION;
     return ob_get_clean();
   }
 
