@@ -52,7 +52,7 @@ class Security
   {
     if ($user instanceof UserSecurityInterface) {
       $this->user = $user;
-      Session::load()->set(static::SESSION_ID, $user->getIndentifier());
+      Session::load()->set(static::SESSION_ID, $user->getIdentifier());
       return true;
     }
 
