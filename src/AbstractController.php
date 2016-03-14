@@ -35,7 +35,7 @@ abstract class AbstractController
   {
     $post->{$identifier . '_slug'} = empty($post->{$identifier . '_slug'}) ? Utility::slugify($post->{$identifier . '_title'}) : $post->{$identifier . '_slug'};
     $message = '';
-    $target = dirname(__DIR__) . '/Resources/' . $directory . '/';
+    $target = Application::getBaseDir() . '/Resources/' . $directory . '/';
 
     // traitement de l'upload
     if (!empty($_FILES[$identifier]['name'])) {
