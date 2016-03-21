@@ -44,7 +44,8 @@ class UrlHelper implements HelperInterface
   {
     $routes = Config::get('routes');
     $route = $routes->get($this->key, (object)['route' => ''])->route;
-    $route = end(explode('::', $route));
+    $route = explode('::', $route);
+    $route = end($route);
 
     return $this->hydrateRoute($route);
   }

@@ -27,6 +27,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
   public function testLoadConfigFolders()
   {
     $values = Config::get('routes');
+    $count = 0;
     foreach ($values as $key => $value) {
       $this->assertTrue(in_array($key, ['basic_route', 'route_with_param', 'route_with_protocol']));
       $this->assertTrue($value instanceof stdClass);
