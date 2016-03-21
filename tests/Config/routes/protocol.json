@@ -1,6 +1,6 @@
 {
-  "blog_index": {
-    "route": "/blog",
+  "route_with_protocol": {
+    "route": "get::/foo",
     "controller": "Index",
     "action": "index"
   }

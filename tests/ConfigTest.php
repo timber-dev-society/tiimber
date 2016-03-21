@@ -29,7 +29,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
   {
     $values = Config::get('routes');
     foreach ($values as $key => $value) {
-      $this->assertTrue(in_array($key, ['basic_route', 'route_with_param', 'blog_index']));
+      $this->assertTrue(in_array($key, ['basic_route', 'route_with_param', 'route_with_protocol']));
       $this->assertTrue($value instanceof stdClass);
       $count++;
     }
