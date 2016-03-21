@@ -32,7 +32,7 @@ class ParameterBagTest extends PHPUnit_Framework_TestCase
   {
     $this->object->set('baz', 'faz');
     $this->assertEquals('faz', $this->object->get('baz'));
-    $this->object->foo = faz;
+    $this->object->foo = 'faz';
     $this->assertEquals('faz', $this->object->get('foo'));
   }
 

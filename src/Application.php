@@ -46,17 +46,17 @@ class Application
     }
   }
 
-  public function getBaseDir()
+  public static function getBaseDir()
   {
     return self::$instance->dir;
   }
 
-  public function getConfigDir()
+  public static function getConfigDir()
   {
     return self::$instance->config_dir ?: self::$instance->dir . DIRECTORY_SEPARATOR . 'Config' . DIRECTORY_SEPARATOR;
   }
 
-  public function getResourceDir()
+  public static function getResourceDir()
   {
     return self::$instance->resource_dir ?: self::$instance->dir . DIRECTORY_SEPARATOR .'Resources' . DIRECTORY_SEPARATOR;
   }
