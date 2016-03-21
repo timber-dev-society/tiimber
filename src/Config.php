@@ -72,6 +72,6 @@ class Config
 
   private function getConfigDir()
   {
-    return Application::getConfigDir() . DIRECTORY_SEPARATOR . 'Config' . DIRECTORY_SEPARATOR;
+    return Application::getConfigDir();
   }
 }

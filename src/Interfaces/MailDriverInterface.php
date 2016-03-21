@@ -1,6 +1,8 @@
 <?php
 namespace Tiimber\Interfaces;
 
+use Tiimber\ParameterBag;
+
 /**
  * To: recipients -- the primary recipients (required)
  * Cc: recipients -- receive a copy of the message (optional)
@@ -11,7 +13,7 @@ interface MailDriverInterface
   /**
    * Entry point to receive Mailer configuration
    */
-  public function setConfig(array $config);
+  public function setConfig(ParameterBag $config);
 
   /**
    * Set e-mail body content
