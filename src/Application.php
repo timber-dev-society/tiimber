@@ -10,6 +10,10 @@ class Application
 
   private $dir = false;
 
+  private $resource_dir = false;
+
+  private $config_dir = false;
+
   public function __construct()
   {
     self::$instance = $this;
