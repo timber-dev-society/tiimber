@@ -6,6 +6,11 @@ use Tiimber\Render;
 use Tiimber\Config;
 use Tiimber\ParameterBag;
 
+use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+
 class Controller
 {
   protected $request;
@@ -20,6 +25,10 @@ class Controller
   {
     $this->request = new Request();
     $this->routes = $routes;
+    $routesCollection = $this->generateRouteCollection();
+
+    $context = new RequestContext('/', $this->request->method);
+    $match = (new UrlMatcher($routesCollection, $context))->match($this->request->url);
     $arguments = [];
     $route = $this->getRoute($arguments);
 
@@ -78,5 +87,26 @@ class Controller
   private function methodMatch($method)
   {
     return strtoupper($method) === $this->request->method;
+  }
+
+  private function generateRouteCollection()
+  {
+    $routes = new RouteCollection();
+
+    foreach ($this->routes as $key => $route) {
+      $pattern = explode('::', $route->route, 2);
+      $sfRoute = new Route(
+        isset($pattern[1]) ? $pattern[1] : $pattern[0]
+      );
+      if (isset($route->requirement)) {
+        $sfRoute->setRequirements($route->requirement);
+      }
+      if (isset($pattern[1])) {
+        $sfRoute->setMethods(strtoupper($pattern[0]));
+      }
+      $routes->add($key, $sfRoute);
+    }
+
+    return $routes;
   }
 }
