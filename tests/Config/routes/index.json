@@ -1,8 +1,11 @@
 {
   "route_with_param": {
-    "route": "/(.+)",
+    "route": "/{id}",
     "controller": "Index",
-    "action": "routeWithParam"
+    "action": "routeWithParam",
+    "require": {
+      "id": "\\d+"
+    }
   },
   "basic_route": {
     "route": "/",
