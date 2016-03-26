@@ -31,16 +31,16 @@ class Renderer
   public function render($tpl, Array $arguments = null)
   {
     $content = $this->renderTpl($tpl, $arguments);
-
     $render = $this->getRenderFunction();
+
     ob_start();
-    include  Application::getBaseDir() . DIRECTORY_SEPARATOR .'Templates' . DIRECTORY_SEPARATOR . 'Layouts' . DIRECTORY_SEPARATOR . $this->layout . '.' . static::TEMPLATE_EXTENSION;
+    include Application::getBaseDir() . DIRECTORY_SEPARATOR .'Templates' . DIRECTORY_SEPARATOR . 'Layouts' . DIRECTORY_SEPARATOR . $this->layout . '.' . static::TEMPLATE_EXTENSION;
     return ob_get_clean();
   }
 
   public function __call($helper, $arguments = null)
   {
-    if (!property_exists($this->helpers, $helper)) {
+    if (!isset($this->helpers->$helper)) {
       throw new Exception($helper . ' isn\'t define into config file');
     }
     $helper = '\\' . $this->helpers->{$helper};
