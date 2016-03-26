@@ -29,12 +29,13 @@ class Controller
 
     $context = new RequestContext('/', $this->request->method);
     $match = (new UrlMatcher($routesCollection, $context))->match($this->request->url);
-    $arguments = [];
-    $route = $this->getRoute($arguments);
+
+    $route = $this->routes->get($match['_route']);
 
     if (property_exists($route, 'security')) {
       $securityRule = Config::get('security')->security->{$route->security};
       $security =  Security::load()->setSecurityDefinition($securityRule);
+
       if (!$security->isAuthenticated || !$security->isAuthorized) {
         header('Location: ' . $securityRule->redirect);
       }
@@ -43,7 +44,7 @@ class Controller
 
     $this->controllers = Config::get('controllers');
 
-    echo $this->runAction($route->controller, $route->action, $arguments);
+    echo $this->runAction($route->controller, $route->action, $match);
   }
 
   public function runAction($controllerName, $action, $arguments)
@@ -61,32 +62,8 @@ class Controller
     if (method_exists($controller, $method)) {
       return call_user_func_array([$controller, $method], $arguments);
     }
+
     return $controller->render();
-  }
-
-  public function getRoute(&$matches)
-  {
-    foreach ($this->routes as $route) {
-      $pattern = explode('::', $route->route, 2);
-
-      if (
-        (count($pattern) === 1 && $this->urlMatch($pattern[0], $matches)) ||
-        (count($pattern) === 2 && $this->urlMatch($pattern[1], $matches) && $this->methodMatch($pattern[0]))
-      ) {
-        unset($matches[0]);
-        return (object)$route;
-      }
-    }
-  }
-
-  private function urlMatch($pattern, &$matches)
-  {
-    return preg_match('/^' . addcslashes($pattern, '/') . '$/i', $this->request->url, $matches);
-  }
-
-  private function methodMatch($method)
-  {
-    return strtoupper($method) === $this->request->method;
   }
 
   private function generateRouteCollection()
@@ -98,8 +75,8 @@ class Controller
       $sfRoute = new Route(
         isset($pattern[1]) ? $pattern[1] : $pattern[0]
       );
-      if (isset($route->requirement)) {
-        $sfRoute->setRequirements($route->requirement);
+      if (isset($route->require)) {
+        $sfRoute->setRequirements((array)$route->require);
       }
       if (isset($pattern[1])) {
         $sfRoute->setMethods(strtoupper($pattern[0]));
