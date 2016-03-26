@@ -28,7 +28,7 @@ class UrlHelper implements HelperInterface
       return $route;
     }
 
-    $elements = preg_split('/\(.+\)/i', $route);
+    $elements = preg_split('/\{.+\}/i', $route);
     if (count($elements) == count($this->args)) {
       foreach ($elements as $key => $value) {
         $elements[$key] = (string)$this->args[$key] . $value;
