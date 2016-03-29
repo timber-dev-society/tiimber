@@ -93,7 +93,7 @@ abstract class AbstractTable
 
   public function paginate($query, $page = 1, $limite = 10)
   {
-    $page = $page - 1;
+    $page = $page == 0 ? 0 : $page - 1;
     if ($query == null) {
       $query = 'SELECT * FROM ' . static::TABLE;
     }
