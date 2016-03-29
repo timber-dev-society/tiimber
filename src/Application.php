@@ -19,14 +19,14 @@ class Application
     self::$instance = $this;
   }
 
-  public function setBaseDir($dir)
+  public function setRoot($dir)
   {
     if (!$this->dir) {
       $this->dir =  $dir;
     }
   }
 
-  public function start()
+  public function chop()
   {
     $routes = Config::get('routes', []);
     new Controller($routes);
