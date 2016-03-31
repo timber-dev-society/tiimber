@@ -5,6 +5,7 @@ use Tiimber\Security;
 use Tiimber\Render;
 use Tiimber\Config;
 use Tiimber\ParameterBag;
+use Tiimber\Helpers\UrlHelper;
 
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
@@ -37,7 +38,7 @@ class Controller
       $security =  Security::load()->setSecurityDefinition($securityRule);
 
       if (!$security->isAuthenticated || !$security->isAuthorized) {
-        header('Location: ' . $securityRule->redirect);
+        return self::redirect($securityRule->redirect);
       }
     }
     $this->renderer = new Renderer(property_exists($route, 'layout') ? $route->layout : 'default');
@@ -64,6 +65,18 @@ class Controller
     }
 
     return $controller->render();
+  }
+
+  public static function redirect($location, array $args = [])
+  {
+    if (false === stripos($location, '/')) {
+      $url = new UrlHelper();
+
+      $url->setArguments(array_merge(['url' => $location], $args));
+      $location = $url->render();
+    }
+
+    header('Location: ' . $location);
   }
 
   private function generateRouteCollection()

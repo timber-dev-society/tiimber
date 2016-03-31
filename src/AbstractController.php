@@ -2,6 +2,7 @@
 namespace Tiimber;
 
 use Tiimber\Utility;
+use Tiimber\Controller;
 
 abstract class AbstractController
 {
@@ -26,9 +27,9 @@ abstract class AbstractController
   {
   }
 
-  public function redirect($location)
+  public function redirect($location, array $args = [])
   {
-    header('Location: ' . $location);
+    Controller::redirect($location, $args);
   }
 
   protected function uploadFile($post, $identifier, $directory = 'images')

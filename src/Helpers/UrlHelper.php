@@ -16,6 +16,7 @@ class UrlHelper implements HelperInterface
   {
     $this->key = isset($args['url']) ? $args['url'] : $args[0];
     if (isset($args['url'])) {
+      array_unshift($args, $args['url']);
       unset($args['url']);
     }
     $args[0] = '';
@@ -33,7 +34,6 @@ class UrlHelper implements HelperInterface
       foreach ($elements as $key => $value) {
         $elements[$key] = (string)$this->args[$key] . $value;
       }
-
       return implode('', $elements);
     } else {
       throw new Exception('UrlHeper: wrong params number for route ' . $this->key);
