@@ -51,7 +51,10 @@ abstract class AbstractTable
   {
     $sql = 'SELECT ' . static::TABLE . '.* FROM ' . static::TABLE . ' WHERE ' . static::TABLE . '.id="' . $id . '"';
     $values = $this->execute($sql)->fetch();
-    return $this->hydrate($values);
+    if ($values) {
+      $values = $this->hydrate($values);
+    }
+    return $values;
   }
 
   public function findBy(array $where)
@@ -62,9 +65,10 @@ abstract class AbstractTable
       $where[$column] = static::TABLE . '.' . $column . '="' . $value . '"';
     };
     $values = $this->execute($sql . implode(' AND ', $where))->fetchAll();
-
     foreach ($values as $key => $value) {
-      $values[$key] = $this->hydrate($value);
+      if ($value) {
+        $values[$key] = $this->hydrate($value);
+      }
     }
 
     return $values;
