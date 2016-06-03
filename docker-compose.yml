@@ -1,0 +1,7 @@
+version: "2"
+services:
+  phpfpm:
+    image: bitnami/php-fpm:7.0.6-r0
+    volumes:
+      - ./:/app
+    command: vendor/bin/phpunit tests/
