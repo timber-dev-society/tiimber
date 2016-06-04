@@ -10,7 +10,7 @@ module.exports = function(grunt) {
           spawn: false,
         },
       },
-      php7: {
+      phpDocker: {
         files: ['**/*.php'],
         tasks: ['exec'],
         options: {
@@ -37,5 +37,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-exec');
 
   grunt.registerTask('default', ['watch:php']);
-  grunt.registerTask('watch7', ['watch:php7']);
+  grunt.registerTask('watch-docker', ['watch:phpDocker']);
 };
