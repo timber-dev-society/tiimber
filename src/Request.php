@@ -17,6 +17,10 @@ class Request
 
   public $referer = null;
 
+  public $definition;
+
+  public $matches;
+
   public function __construct()
   {
     $this->post = (object)$_POST;

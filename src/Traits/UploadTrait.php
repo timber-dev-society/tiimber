@@ -1,13 +1,13 @@
 <?php
 
-namespace Tiimber\Utilities;
+namespace Tiimber\Traits;
 
 use Tiimber\Application;
 use Tiimber\Exception;
 /**
  *  Utility helper to upload files
  */
-trait UploadFile
+trait UploadTrait
 {
   public function upload(string $field, string $name = null, string $directory = 'images'): string
   {
