@@ -13,7 +13,7 @@ trait Logger
 
   public function log($level, $message, array $context = array())
   {
-    $logger = Config::get('drivers', new ParameterBag([]))->get('logger', false);
+    $logger = Config::get('drivers', new ParameterBag())->get('logger', false);
     if ($logger) {
       $logger->log($level, $message,  $context);
     } else {
@@ -26,8 +26,8 @@ trait Logger
     if (!is_dir(Application::getBaseDir() . '/log')) {
       mkdir(Application::getBaseDir() . '/log');
     }
-    if (!file_exists(Application::getBaseDir() . '/log/log.txt')) {
-      touch(Application::getBaseDir() . '/log/log.txt');
+    if (!file_exists(Application::getBaseDir() . '/log/tiimber.log')) {
+      touch(Application::getBaseDir() . '/log/tiimber.log');
     }
   }
 
@@ -35,7 +35,7 @@ trait Logger
   {
     $this->initFolder();
     $date = date('d/m/Y ~ G\:i ');
-    $filepath = Application::getBaseDir() . '/log/log.txt';
+    $filepath = Application::getBaseDir() . '/log/tiimber.log';
     file_put_contents($filepath, $date . '[' . $level . '] ' . $message, FILE_APPEND);
   }
 }

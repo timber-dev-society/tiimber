@@ -22,7 +22,7 @@ class LoggerTest extends PHPUnit_Framework_TestCase
     $date = date("d/m/Y ~ G\:i ");
     $this->notice($message);
     $this->assertTrue($root->hasChild('log'));
-    $filepath = Application::getBaseDir() . "/log/log.txt";
+    $filepath = Application::getBaseDir() . "/log/tiimber.log";
     $this->assertEquals($date . '[notice] ' . $message, file_get_contents($filepath));
   }
 }
