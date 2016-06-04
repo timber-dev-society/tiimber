@@ -24,7 +24,7 @@ class ParameterBag implements IteratorAggregate, Serializable
    * @param $default mixed
    * @return mixed
    */
-  public function get($key, $default = null)
+  public function get(string $key, $default = null)
   {
     if (isset($this->properties->{$key})) {
       return $this->properties->{$key};
@@ -38,7 +38,7 @@ class ParameterBag implements IteratorAggregate, Serializable
    * @param $key String
    * @param $value mixed
    */
-  public function set($key, $value)
+  public function set(string $key, $value)
   {
     $this->properties->{$key} = $value;
   }
@@ -46,7 +46,7 @@ class ParameterBag implements IteratorAggregate, Serializable
   /**
    * @return ArrayIterator
    */
-  public function getIterator()
+  public function getIterator(): ArrayIterator
   {
     return new ArrayIterator($this->properties);
   }
