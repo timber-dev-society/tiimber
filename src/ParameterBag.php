@@ -8,6 +8,15 @@ use Serializable;
 
 class ParameterBag implements IteratorAggregate, Serializable
 {
+  private $properties;
+
+  private $private_properties = [];
+
+  public function __construct($properties = null)
+  {
+    $this->properties = is_null($properties) ? null : (object)$properties;
+  }
+
   /**
    * Get object parameter
    *
@@ -17,8 +26,8 @@ class ParameterBag implements IteratorAggregate, Serializable
    */
   public function get($key, $default = null)
   {
-    if (isset($this->{$key})) {
-      return $this->{$key};
+    if (isset($this->properties->{$key})) {
+      return $this->properties->{$key};
     }
     return $default;
   }
@@ -31,7 +40,7 @@ class ParameterBag implements IteratorAggregate, Serializable
    */
   public function set($key, $value)
   {
-    $this->{$key} = $value;
+    $this->properties->{$key} = $value;
   }
 
   /**
@@ -42,33 +51,9 @@ class ParameterBag implements IteratorAggregate, Serializable
     return new ArrayIterator($this->properties);
   }
 
-  protected $properties;
-
-  protected $private_properties = [];
-
-  public function __construct($properties = null)
-  {
-    $this->properties = (object)$properties;
-  }
-
-  public function __set(string $property, $value): ParameterBag
-  {
-    if (!in_array($property, $this->private_properties)) {
-      $this->properties->$property = $value;
-    }
-    return $this;
-  }
-
-  public function __get(string $property)
-  {
-    if (!in_array($property, $this->private_properties)) {
-      return $this->properties->$property;
-    }
-  }
-
   public function __isset(string $property): bool
   {
-    return isset($this->properties->$property);
+    return isset($this->properties->{$property});
   }
 
   public function serialize(): string

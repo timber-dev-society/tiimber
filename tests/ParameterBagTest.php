@@ -23,7 +23,6 @@ class ParameterBagTest extends PHPUnit_Framework_TestCase
   public function testGet()
   {
     $this->assertEquals('bar', $this->object->get('foo'));
-    $this->assertEquals('bar', $this->object->foo);
     $this->assertNull($this->object->get('baz'));
     $this->assertTrue($this->object->get('baz', true));
   }
@@ -32,8 +31,6 @@ class ParameterBagTest extends PHPUnit_Framework_TestCase
   {
     $this->object->set('baz', 'faz');
     $this->assertEquals('faz', $this->object->get('baz'));
-    $this->object->foo = 'faz';
-    $this->assertEquals('faz', $this->object->get('foo'));
   }
 
   public function testIterator()
