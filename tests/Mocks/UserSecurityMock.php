@@ -3,7 +3,7 @@ namespace Tiimber\Tests\Mocks;
 
 use Tiimber\Interfaces\UserSecurityInterface;
 
-class UserSecurityMock implements UserSecurityInterface;
+class UserSecurityMock implements UserSecurityInterface
 {
   private $identifier;
 
@@ -32,6 +32,6 @@ class UserSecurityMock implements UserSecurityInterface;
 
   public function getUsername(): string
   {
-    return $this->identifier
+    return $this->identifier;
   }
 }

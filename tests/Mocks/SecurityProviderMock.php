@@ -5,13 +5,18 @@ use Tiimber\Interfaces\SecurityProviderInterface;
 use Tiimber\Interfaces\UserSecurityInterface;
 use Tiimber\Tests\Mocks\UserSecurityMock;
 
-class SecurityProviderMock implements SecurityProviderInterface;
+class SecurityProviderMock implements SecurityProviderInterface
 {
   private $users = [];
 
+  public function __construct()
+  {
+    $this->users['foo'] = new UserSecurityMock('foo', ['bar']);
+  }
+
   public function loadUser(array $parameters): UserSecurityInterface
   {
-    return new UserSecurityMock($parameters->identifier, $parameters->roles);
+    return new UserSecurityMock($parameters['identifier'], $parameters['roles']);
   }
 
   public function loadUserByIdentifier($id): UserSecurityInterface
@@ -19,8 +24,8 @@ class SecurityProviderMock implements SecurityProviderInterface;
     return $this->users[$id];
   }
 
-  public function saveUser(UserSecurityInterface $user);
+  public function saveUser(UserSecurityInterface $user)
   {
-    $this->users[$user->getIdentifier] = $user;
+    $this->users[$user->getIdentifier()] = $user;
   }
 }

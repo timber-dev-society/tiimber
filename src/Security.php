@@ -89,7 +89,7 @@ class Security
 
   private function getSecurityProvider(): SecurityProviderInterface
   {
-    $namespace = $this->config->security_provider;
+    $namespace = $this->config->get('security_provider');
     $provider = new $namespace();
     if (!$provider instanceof SecurityProviderInterface) {
       throw new Exception($namespace . ' must implement Tiimber\Interfaces\SecurityProviderInterface');

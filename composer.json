@@ -10,7 +10,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Tiimber\\Tests\\": "test/",
+            "Tiimber\\Tests\\": "tests/",
             "Tiimber\\": "src/"
         }
     },
