@@ -1,0 +1,4 @@
+{
+  "salt": "123456",
+  "security_provider": "\\Tiimber\\Tests\\Mocks\\SecurityProviderMock"
+}

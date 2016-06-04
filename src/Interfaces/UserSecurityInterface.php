@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Tiimber\Interfaces;
 
 interface UserSecurityInterface
@@ -16,19 +17,19 @@ interface UserSecurityInterface
    * @param String $role
    * @return Boolean
    */
-  public function hasRole($role);
+  public function hasRole(string $role): bool;
 
   /**
    * Return all role of the user
    *
    * @return Array
    */
-  public function getRoles();
+  public function getRoles(): array;
 
   /**
    * Return the user username
    *
    * @return String
    */
-  public function getUsername();
+  public function getUsername(): string;
 }
