@@ -1,11 +1,11 @@
 <?php
-namespace Tiimber;
+namespace Tiimber\Utilities;
 
-class Utility
+class Text
 {
   /**
    * Slugify text by removing non ASCII carac
-   * 
+   *
    * @param $text String to slugify
    * @return Sting
    */
@@ -25,13 +25,13 @@ class Utility
 
   /**
    * Crop text at the max size of your choice
-   * 
+   *
    * @param $text String to crop
    * @param $maxSize Integer the max size of the string
    * @param $preserveWord Boolean the max size of the string
    * @return String
    */
-  public static function cropText($text, $maxSize, $preserveWords = true)
+  public static function crop($text, $maxSize, $preserveWords = true)
   {
     if ($preserveWords) {
       $words = explode(' ', $text);
@@ -43,19 +43,12 @@ class Utility
           break;
         }
       }
-      
+
       $maxSize = $count + 2;
     }
-    
-    return strlen($text) > ($maxSize)
-      ? substr($text, 0, $maxSize - 3) . '...' 
-      : $text;
-  }
 
-  public static function t($text)
-  {
-    if ($text === 'dashboard') {
-      return 'Tableau de bord';
-    }
+    return strlen($text) > ($maxSize)
+      ? substr($text, 0, $maxSize - 3) . '...'
+      : $text;
   }
 }
