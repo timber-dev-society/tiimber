@@ -3,6 +3,7 @@ namespace Tiimber;
 
 use Tiimber\ParameterBag;
 use Tiimber\Memory\ProviderResolver;
+use Tiimber\Exception;
 
 class Memory
 {
@@ -26,13 +27,16 @@ class Memory
   public function get(string $scope): ParameterBag
   {
     $instance = self::init();
+    if (!$instance->scopes->has($scope)) {
+      throw new Exception('Uninitialize memory for ' . $scope . ' scope', 500);
+    }
     return $instance->scopes->get($scope);
   }
 
   public function set(string $scope): ParameterBag
   {
     $instance = self::init();
-    if (!$instance->scopes->get($scope, false)) {
+    if (!$instance->scopes->has($scope)) {
       $instance->scopes->set($scope, new ParameterBag());
     }
     return $instance->scopes->get($scope);

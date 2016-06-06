@@ -45,6 +45,17 @@ class ParameterBag implements IteratorAggregate, Serializable
   }
 
   /**
+   * Has object parameter
+   *
+   * @param $key String
+   * @return boll
+   */
+  public function has(string $key): bool
+  {
+    return isset($this->properties->{$key});
+  }
+
+  /**
    * @return ArrayIterator
    */
   public function getIterator(): ArrayIterator

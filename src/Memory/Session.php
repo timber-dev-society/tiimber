@@ -10,7 +10,7 @@ class Session implements MemoryProviderInterface
 {
   public function store(string $scope, ParameterBag $values)
   {
-    BaseSession::load()->set($scope, $values->serialize);
+    BaseSession::load()->set($scope, $values->serialize());
   }
 
   public function restore(string $scope): ParameterBag

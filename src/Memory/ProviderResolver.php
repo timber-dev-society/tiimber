@@ -3,6 +3,7 @@
 namespace Tiimber\Memory;
 
 use Tiimber\Memory\Session;
+use Tiimber\Memory\Sql;
 
 class ProviderResolver
 {
@@ -10,7 +11,8 @@ class ProviderResolver
 
   public function __construct()
   {
-    $providers['session'] = new Session;
+    $providers['session'] = new Session();
+    $providers['sql'] = new Sql();
   }
 
   public function resolve(string $provider)
