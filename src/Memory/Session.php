@@ -4,8 +4,9 @@ namespace Tiimber\Memory;
 
 use Tiimber\ParameterBag;
 use Tiimber\Session as BaseSession;
+use Tiimber\Interfaces\MemoryProviderInterface;
 
-class Session
+class Session implements MemoryProviderInterface
 {
   public function store(string $scope, ParameterBag $values)
   {
