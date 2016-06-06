@@ -2,16 +2,18 @@
 
 namespace Tiimber\Traits;
 
-use Tiimber\Application;
+use Tiimber\Traits\FolderResolverTrait;
 use Tiimber\Exception;
 /**
  *  Utility helper to upload files
  */
 trait UploadTrait
 {
+  use FolderResolverTrait;
+
   public function upload(string $field, string $name = null, string $directory = 'images'): string
   {
-    $uploadDir = Application::getResourceDir() . $directory . '/';
+    $uploadDir = $this->getResourceDir() . $directory . '/';
     if (empty($_FILES[$field]['name'])) {
       throw Exception('500', $field . ' seems not to be an upload field');
     }

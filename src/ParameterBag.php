@@ -5,6 +5,7 @@ namespace Tiimber;
 use ArrayIterator;
 use IteratorAggregate;
 use Serializable;
+use stdClass;
 
 class ParameterBag implements IteratorAggregate, Serializable
 {
@@ -14,7 +15,7 @@ class ParameterBag implements IteratorAggregate, Serializable
 
   public function __construct($properties = null)
   {
-    $this->properties = is_null($properties) ? null : (object)$properties;
+    $this->properties = is_null($properties) ? new stdClass() : (object)$properties;
   }
 
   /**

@@ -6,13 +6,14 @@ use PHPUnit_Framework_TestCase;
 use org\bovigo\vfs\vfsStream;
 
 use Tiimber\Application;
-use Tiimber\Logger;
+use Tiimber\Traits\LoggerTrait;
+use Tiimber\Traits\FolderResolverTrait;
 
 use stdClass;
 
 class LoggerTest extends PHPUnit_Framework_TestCase
 {
-  use Logger;
+  use LoggerTrait;
 
   public function testDefaultLoggerFiles()
   {
@@ -22,7 +23,7 @@ class LoggerTest extends PHPUnit_Framework_TestCase
     $date = date("d/m/Y ~ G\:i ");
     $this->notice($message);
     $this->assertTrue($root->hasChild('log'));
-    $filepath = Application::getBaseDir() . "/log/tiimber.log";
+    $filepath = $this->getBaseDir() . "/log/tiimber.log";
     $this->assertEquals($date . '[notice] ' . $message, file_get_contents($filepath));
   }
 }

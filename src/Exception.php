@@ -1,11 +1,11 @@
 <?php
 namespace Tiimber;
 
-use Tiimber\Logger;
+use Tiimber\Traits\LoggerTrait;
 
 class Exception extends \Exception
 {
-  use Tiimber\Logger;
+  use LoggerTrait;
 
   public function __construct($message, $code = 0)
   {

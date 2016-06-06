@@ -1,12 +1,14 @@
 <?php
 namespace Tiimber;
 
-use Tiimber\Application;
 use Tiimber\Exception;
 use Tiimber\ParameterBag;
+use Tiimber\Traits\FolderResolverTrait;
 
 class Config
 {
+  use FolderResolverTrait;
+
   private static $instance;
 
   private $config = [];
@@ -58,20 +60,15 @@ class Config
     $folders = array_diff(scandir($this->getConfigdir()), ['..', '.']);
 
     foreach($folders as $folder) {
-      if (!is_dir($this->getConfigdir() . $folder)) {
+      if (!is_dir($this->getConfigDir() . $folder)) {
         continue;
       }
-      $files = glob($this->getConfigdir() . $folder . '/*.json', GLOB_BRACE);
+      $files = glob($this->getConfigDir() . $folder . '/*.json', GLOB_BRACE);
       $content = [];
       foreach($files as $file) {
         $content = array_merge($content, (array)$this->readJsonFile($file));
       }
       $this->config[basename($folder)] = new ParameterBag($content);
     }
-  }
-
-  private function getConfigDir()
-  {
-    return Application::getConfigDir();
   }
 }
