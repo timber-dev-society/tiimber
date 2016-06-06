@@ -11,5 +11,7 @@ class Folder
 
   const RESOURCE = 'resources';
 
+  const CACHE = 'cache';
+
   const DS = DIRECTORY_SEPARATOR;
 }

@@ -39,4 +39,9 @@ class Application
   {
     Memory::set(Folder::SCOPE)->set(Folder::RESOURCE, $dir);
   }
+
+  public function setCacheFolder($dir)
+  {
+    Memory::set(Folder::SCOPE)->set(Folder::CACHE, $dir);
+  }
 }

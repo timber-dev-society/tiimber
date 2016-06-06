@@ -22,4 +22,10 @@ trait FolderResolverTrait
     return Memory::get(Folder::SCOPE)->get(Folder::RESOURCE, false)
         ?: Memory::get(Folder::SCOPE)->get(Folder::BASE) . Folder::DS . Folder::RESOURCE . Folder::DS;
   }
+
+  public function getResourceDir()
+  {
+    return Memory::get(Folder::SCOPE)->get(Folder::CACHE, false)
+        ?: Memory::get(Folder::SCOPE)->get(Folder::BASE) . Folder::DS . Folder::CACHE . Folder::DS;
+  }
 }
