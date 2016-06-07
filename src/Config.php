@@ -49,7 +49,7 @@ class Config
 
   private function loadConfigFiles()
   {
-    $files = glob($this->getConfigdir() . '*.json', GLOB_BRACE);
+    $files = glob($this->getConfigdir() . '*.json');
     foreach($files as $file) {
       $this->config[basename($file, '.json')] = new ParameterBag($this->readJsonFile($file));
     }
@@ -63,7 +63,7 @@ class Config
       if (!is_dir($this->getConfigDir() . $folder)) {
         continue;
       }
-      $files = glob($this->getConfigDir() . $folder . '/*.json', GLOB_BRACE);
+      $files = glob($this->getConfigDir() . $folder . '/*.json');
       $content = [];
       foreach($files as $file) {
         $content = array_merge($content, (array)$this->readJsonFile($file));

@@ -15,6 +15,6 @@ class Session implements MemoryProviderInterface
 
   public function restore(string $scope): ParameterBag
   {
-    retrun (new ParameterBag())->unserialize(BaseSession::load()->get($scope));
+    return (new ParameterBag())->unserialize(BaseSession::load()->get($scope));
   }
 }

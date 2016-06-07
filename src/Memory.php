@@ -24,7 +24,7 @@ class Memory
     return self::$instance;
   }
 
-  public function get(string $scope): ParameterBag
+  public static function get(string $scope): ParameterBag
   {
     $instance = self::init();
     if (!$instance->scopes->has($scope)) {
@@ -33,7 +33,7 @@ class Memory
     return $instance->scopes->get($scope);
   }
 
-  public function set(string $scope): ParameterBag
+  public static function set(string $scope): ParameterBag
   {
     $instance = self::init();
     if (!$instance->scopes->has($scope)) {

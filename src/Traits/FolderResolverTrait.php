@@ -23,7 +23,7 @@ trait FolderResolverTrait
         ?: Memory::get(Folder::SCOPE)->get(Folder::BASE) . Folder::DS . Folder::RESOURCE . Folder::DS;
   }
 
-  public function getResourceDir()
+  public function getCacheDir()
   {
     return Memory::get(Folder::SCOPE)->get(Folder::CACHE, false)
         ?: Memory::get(Folder::SCOPE)->get(Folder::BASE) . Folder::DS . Folder::CACHE . Folder::DS;

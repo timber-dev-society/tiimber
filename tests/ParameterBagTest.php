@@ -14,10 +14,10 @@ class ParameterBagTest extends PHPUnit_Framework_TestCase
     $this->object = new ParameterBag(['foo' => 'bar']);
   }
 
-  public function testIsset()
+  public function testHas()
   {
-    $this->assertTrue(isset($this->object->foo));
-    $this->assertFalse(isset($this->object->baz));
+    $this->assertTrue($this->object->has('foo'));
+    $this->assertFalse($this->object->has('baz'));
   }
 
   public function testGet()
