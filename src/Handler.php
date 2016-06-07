@@ -1,15 +1,19 @@
 <?php
 namespace Tiimber;
 
-use Tiimber\Security;
-use Tiimber\Render;
 use Tiimber\Config;
 use Tiimber\ParameterBag;
+use Tiimber\Render;
+use Tiimber\Request;
+use Tiimber\Security;
+
 use Tiimber\Traits\RedirectTrait;
+use Tiimber\Traits\RouteResolverTrait;
 
 class Handler
 {
   use RedirectTrait;
+  use RouteResolverTrait;
 
   protected $request;
 
@@ -17,9 +21,10 @@ class Handler
 
   protected $controllers;
 
-  public function __construct(Request $request)
+  public function __construct(ParameterBag $routes)
   {
-    $this->request = $request;
+    $this->request = new Request();
+    $match = $this->resolve($routes, $this->request->method, $this->request->url);
 
     if (property_exists($request->definition, 'security')) {
       $securityRule = Config::get('security')->get('security')->{$request->definition->security};
@@ -29,8 +34,6 @@ class Handler
         return $this->redirect($securityRule->redirect);
       }
     }
-    $this->renderer = new Renderer(property_exists($route, 'layout') ? $route->layout : 'default');
-
     $this->controllers = Config::get('controllers');
 
     echo $this->handle($request->definition->controller, $request->definition->action, $request->matches);

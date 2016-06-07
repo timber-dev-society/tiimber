@@ -3,8 +3,6 @@ namespace Tiimber;
 
 use Tiimber\Config;
 use Tiimber\Handler;
-use Tiimber\Request;
-use Tiimber\RouteResolver;
 use Tiimber\Memory;
 use Tiimber\Folder;
 
@@ -19,10 +17,7 @@ class Application
 
   public function chop()
   {
-    $routes = Config::get('routes', []);
-    $request = new Request();
-    (new RouteResolver($routes, $request));
-    (new Handler($request));
+    (new Handler(Config::get('routes', [])));
   }
 
   public function setRoot($dir)
