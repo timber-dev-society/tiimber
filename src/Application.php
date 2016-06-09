@@ -1,42 +1,70 @@
 <?php
 namespace Tiimber;
+include __DIR__ . '/Folder.php'; // Tweak for "use const" works. Need better autoload
 
-use Tiimber\Config;
-use Tiimber\Handler;
-use Tiimber\Memory;
-use Tiimber\Folder;
+use Tiimber\{Config, Dispatcher, Request, Memory};
+use const Tiimber\Folder\{SCOPE, BASE, CONFIG, RESOURCE, CACHE, DS};
 
-class Application
+use Tiimber\Traits\{RouteResolverTrait, FolderResolverTrait};
+
+trait Application
 {
-  private static $instance;
+  use RouteResolverTrait;
+  use FolderResolverTrait;
 
-  public function __construct()
+  private function viewsLoading($namespace, $folder)
   {
-    self::$instance = $this;
+    if (is_dir($folder . DS . 'Views')) {
+      foreach(glob($folder . DS . 'Views' . DS . '*.php') as $file) {
+        $classname = '\\' . $namespace . '\\Views\\' . basename($file, '.php');
+        Memory::set('views')->set($classname, new $classname());
+      }
+    }
+  }
+
+  private function layoutsLoading($namespace, $folder)
+  {
+    if (is_dir($folder . DS . 'Layouts')) {
+      foreach(glob($folder . DS . 'Layouts' . DS . '*.php') as $file) {
+        $classname = '\\' . $namespace . '\\Layouts\\' . basename($file, '.php');
+        Memory::set('layouts')->set($classname, new $classname());
+      }
+    }
+  }
+
+  private function appLoading($namespace)
+  {
+    $this->viewsLoading($namespace, $this->getBaseDir() . DS . $namespace);
+    $this->layoutsLoading($namespace, $this->getBaseDir() . DS . $namespace);
   }
 
   public function chop()
   {
-    (new Handler(Config::get('routes', [])));
+    $explodedClass = explode('\\', self::class);
+    $this->appLoading(reset($explodedClass));
+    $request = new Request();
+    $routes = Config::get('routes', []);
+    $match = $this->resolve($routes, $request->method, $request->url);
+    (new Dispatcher())->dispatch(strtolower($request->method . '::' . $routes->get($match['_route'])->event), $request, $match);
   }
 
   public function setRoot($dir)
   {
-    Memory::set(Folder::SCOPE)->set(Folder::BASE, $dir);
+    Memory::set(SCOPE)->set(BASE, $dir);
   }
 
   public function setConfigDir($dir)
   {
-    Memory::set(Folder::SCOPE)->set(Folder::CONFIG, $dir);
+    Memory::set(SCOPE)->set(CONFIG, $dir);
   }
 
   public function setResourceDir($dir)
   {
-    Memory::set(Folder::SCOPE)->set(Folder::RESOURCE, $dir);
+    Memory::set(SCOPE)->set(RESOURCE, $dir);
   }
 
   public function setCacheFolder($dir)
   {
-    Memory::set(Folder::SCOPE)->set(Folder::CACHE, $dir);
+    Memory::set(SCOPE)->set(CACHE, $dir);
   }
 }

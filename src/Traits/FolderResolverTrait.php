@@ -2,30 +2,30 @@
 namespace Tiimber\Traits;
 
 use Tiimber\Memory;
-use Tiimber\Folder;
+use const Tiimber\Folder\{SCOPE, BASE, CONFIG, RESOURCE, CACHE, DS};
 
 trait FolderResolverTrait
 {
   public function getBaseDir()
   {
-    return Memory::get(Folder::SCOPE)->get(Folder::BASE);
+    return Memory::get(SCOPE)->get(BASE);
   }
 
   public function getConfigDir()
   {
-    return Memory::get(Folder::SCOPE)->get(Folder::CONFIG, false)
-        ?: Memory::get(Folder::SCOPE)->get(Folder::BASE) . Folder::DS . Folder::CONFIG . Folder::DS;
+    return Memory::get(SCOPE)->get(CONFIG, false)
+        ?: Memory::get(SCOPE)->get(BASE) . DS . CONFIG . DS;
   }
 
   public function getResourceDir()
   {
-    return Memory::get(Folder::SCOPE)->get(Folder::RESOURCE, false)
-        ?: Memory::get(Folder::SCOPE)->get(Folder::BASE) . Folder::DS . Folder::RESOURCE . Folder::DS;
+    return Memory::get(SCOPE)->get(RESOURCE, false)
+        ?: Memory::get(SCOPE)->get(BASE) . DS . RESOURCE . DS;
   }
 
   public function getCacheDir()
   {
-    return Memory::get(Folder::SCOPE)->get(Folder::CACHE, false)
-        ?: Memory::get(Folder::SCOPE)->get(Folder::BASE) . Folder::DS . Folder::CACHE . Folder::DS;
+    return Memory::get(SCOPE)->get(CACHE, false)
+        ?: Memory::get(SCOPE)->get(BASE) . DS . CACHE . DS;
   }
 }

@@ -1,17 +1,14 @@
 <?php
-namespace Tiimber;
+namespace Tiimber\Folder;
 
-class Folder
-{
-  const SCOPE = 'folders';
+const SCOPE = 'folders';
 
-  const BASE = 'base';
+const BASE = 'base';
 
-  const CONFIG = 'config';
+const CONFIG = 'config';
 
-  const RESOURCE = 'resources';
+const RESOURCE = 'resources';
 
-  const CACHE = 'cache';
+const CACHE = 'cache';
 
-  const DS = DIRECTORY_SEPARATOR;
-}
+const DS = DIRECTORY_SEPARATOR;
