@@ -37,6 +37,17 @@ class Session
   }
 
   /**
+   * Has parameter stored in session
+   *
+   * @param String $key
+   * @return mixed
+   */
+  public function has(string $key)
+  {
+    return isset($_SESSION[$key]);
+  }
+
+  /**
    * Store a value in session
    *
    * @param String $key
