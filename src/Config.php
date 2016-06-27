@@ -31,11 +31,8 @@ class Config
     if (!self::$instance) {
       self::$instance = new self();
     }
-    if (isset(self::$instance->config[$key])) {
-      return self::$instance->config[$key];
-    }
 
-    return $default;
+    return self::$instance->config[$key] ?? $default;
   }
 
   private function readJsonFile($filename)

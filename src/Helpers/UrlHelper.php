@@ -14,7 +14,7 @@ class UrlHelper implements HelperInterface
 
   public function setArguments(array $args = null)
   {
-    $this->key = isset($args['url']) ? $args['url'] : $args[0];
+    $this->key = $args['url'] ?? $args[0];
     if (isset($args['url'])) {
       array_unshift($args, $args['url']);
       unset($args['url']);

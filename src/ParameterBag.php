@@ -29,10 +29,7 @@ class ParameterBag implements IteratorAggregate, Serializable
    */
   public function get(string $key, $default = null)
   {
-    if (isset($this->properties->{$key})) {
-      return $this->properties->{$key};
-    }
-    return $default;
+    return $this->properties->{$key} ?? $default;
   }
 
   /**

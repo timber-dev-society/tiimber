@@ -33,8 +33,7 @@ class Request
     }
     $this->method = $_SERVER['REQUEST_METHOD'];
     $this->cookie = new ParameterBag($_COOKIE);
-    if (isset($_SERVER['HTTP_REFERER'])) {
-      $this->referer = $_SERVER['HTTP_REFERER'];
-    }
+
+    $this->referer = $_SERVER['HTTP_REFERER'] ?? null;
   }
 }

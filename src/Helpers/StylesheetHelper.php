@@ -18,7 +18,7 @@ class StylesheetHelper implements HelperInterface
 
   public function setArguments(array $args = null)
   {
-    $this->url = isset($args['url']) ? $args['url'] : $args[0];
+    $this->url = $args['url'] ?? $args[0];
 
     if (strpos('http', $this->url) || strpos('//', $this->url) == 1) {
       $this->external = true;

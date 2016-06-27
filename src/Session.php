@@ -33,7 +33,7 @@ class Session
    */
   public function get(string $key, $default = null)
   {
-    return isset($_SESSION[$key]) ? $_SESSION[$key] : $default;
+    return $_SESSION[$key] ?? $default;
   }
 
   /**

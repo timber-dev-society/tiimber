@@ -3,6 +3,8 @@ namespace Tiimber;
 
 use Serializable;
 
+use Tiimber\ViewException;
+
 abstract class View implements Serializable
 {
   /**
@@ -24,5 +26,20 @@ abstract class View implements Serializable
   public function unserialize($serialized): View
   {
     return $this;
+  }
+
+  public function raise(int $code, string $message = null)
+  {
+    throw new ViewException($message, $code);
+  }
+
+  public function dispatch(string $event, ...$args)
+  {
+
+  }
+
+  public function __toString()
+  {
+    return slef::TPL;
   }
 }

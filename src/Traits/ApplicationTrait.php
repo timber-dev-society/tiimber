@@ -1,7 +1,7 @@
 <?php
-namespace Tiimber;
-include __DIR__ . '/Folder.php'; // Tweak for "use const" works. Need better autoload
-include __DIR__ . '/Memory/Scopes.php'; // Tweak for "use const" works. Need better autoload
+namespace Tiimber\Traits;
+include dirname(__DIR__) . '/Folder.php'; // Tweak for "use const" works. Need better autoload
+include dirname(__DIR__) . '/Memory/Scopes.php'; // Tweak for "use const" works. Need better autoload
 
 use Tiimber\{Config, Dispatcher, Request, Memory, Loader};
 use const Tiimber\Folder\{BASE, CONFIG, RESOURCE, CACHE};
@@ -9,7 +9,7 @@ use const Tiimber\Memory\Scopes\FOLDER;
 
 use Tiimber\Traits\RouteResolverTrait;
 
-trait Application
+trait ApplicationTrait
 {
   use RouteResolverTrait;
 
