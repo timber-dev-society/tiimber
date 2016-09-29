@@ -1,22 +1,12 @@
 <?php
 namespace Tiimber;
 
-use Serializable;
+use Tiimber\Action;
 
-use Tiimber\ViewException;
+use Tiimber\Exceptions\ViewException;
 
-abstract class View implements Serializable
+abstract class View extends Action
 {
-  /**
-   * Serialize all parameters
-   *
-   * return string
-   */
-  public function serialize(): string
-  {
-    return self::class . '::EVENTS';
-  }
-
   /**
    * unserialize all parameters and return a ParameterBag
    *
@@ -31,11 +21,6 @@ abstract class View implements Serializable
   public function raise(int $code, string $message = null)
   {
     throw new ViewException($message, $code);
-  }
-
-  public function dispatch(string $event, ...$args)
-  {
-
   }
 
   public function __toString()

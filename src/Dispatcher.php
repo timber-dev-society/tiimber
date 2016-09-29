@@ -4,7 +4,7 @@ namespace Tiimber;
 use Tiimber\Memory;
 use Tiimber\Traits\FolderResolverTrait;
 
-use const Tiimber\Memory\Scopes\{LAYOUT, HELPER};
+use const Tiimber\Memory\Scopes\{LAYOUT, HELPER, VIEW, ACTION};
 
 use Mustache_Engine;
 
@@ -24,9 +24,20 @@ class Dispatcher
     return $this->eventAction;
   }
 
-  public function resolveEvent($event, $parameters)
+  public function dispatchActionEvent($event, $parameters)
   {
-    foreach (Memory::get('views') as $namespace => $view) {
+    foreach (Memory::get(ACTION) as $namespace => $action) {
+      if (in_array($event, $action::EVENTS)) {
+        if (method_exists($action, $this->getEventAction(...$parameters))) {
+          $action->{$this->getEventAction(...$parameters)}(...$parameters);
+        }
+      }
+    }
+  }
+
+  public function resolveViewEvent($event, $parameters)
+  {
+    foreach (Memory::get(VIEW) as $namespace => $view) {
       if (isset($view::EVENTS[$event])) {
         if (method_exists($view, $this->getEventAction(...$parameters))) {
           $view->{$this->getEventAction(...$parameters)}(...$parameters);
@@ -52,7 +63,10 @@ class Dispatcher
       'pragmas' => [Mustache_Engine::PRAGMA_FILTERS],
       'helpers' => $helpers
     ]);
-    foreach ($this->resolveEvent($event, $parameters) as $namespace => $view) {
+
+    $this->dispatchActionEvent($event, $parameters);
+
+    foreach ($this->resolveViewEvent($event, $parameters) as $namespace => $view) {
       $outlets[$view::EVENTS[$event]] = '<tiimber-fragment view="' . $namespace . '">' . $m->render($view::TPL, $view->render()) . '</tiimber-fragment>';
     }
 

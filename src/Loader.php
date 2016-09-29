@@ -1,7 +1,7 @@
 <?php
 namespace Tiimber;
 
-use const Tiimber\Memory\Scopes\{LAYOUT, VIEW, HELPER};
+use const Tiimber\Memory\Scopes\{LAYOUT, VIEW, HELPER, ACTION};
 use const Tiimber\Folder\DS;
 
 use Tiimber\Traits\FolderResolverTrait;
@@ -13,6 +13,7 @@ class Loader
   public function __construct(string $namespace)
   {
     $this->viewsLoading($namespace, $this->getBaseDir() . DS . $namespace);
+    $this->actionsLoading($namespace, $this->getBaseDir() . DS . $namespace);
     $this->helpersLoading($namespace, $this->getBaseDir() . DS . $namespace);
     $this->layoutsLoading($namespace, $this->getBaseDir() . DS . $namespace);
   }
@@ -50,6 +51,27 @@ class Loader
             VIEW,
             $folder . DS . ucfirst(VIEW) . DS . $dirname,
             '\\' . $namespace . '\\' . ucfirst(VIEW) . '\\' . $dirname . '\\'
+          );
+        }
+      );
+    }
+  }
+  
+  private function actionsLoading($namespace, $folder)
+  {
+    if (is_dir($folder . DS . ucfirst(ACTION))) {
+      $this->loadFromDir(
+        ACTION,
+        $folder . DS . ucfirst(ACTION),
+        '\\' . $namespace . '\\' . ucfirst(ACTION) . '\\'
+      );
+      $this->getDir(
+        $folder . DS . ucfirst(ACTION),
+        function (string $dirname) use ($folder, $namespace) {
+          $this->loadFromDir(
+            ACTION,
+            $folder . DS . ucfirst(ACTION) . DS . $dirname,
+            '\\' . $namespace . '\\' . ucfirst(ACTION) . '\\' . $dirname . '\\'
           );
         }
       );
