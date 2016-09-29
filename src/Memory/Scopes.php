@@ -6,3 +6,5 @@ const VIEW = 'views';
 const LAYOUT = 'layouts';
 
 const FOLDER = 'folders';
+
+const HELPER = 'helpers';

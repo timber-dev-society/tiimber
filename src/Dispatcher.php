@@ -4,6 +4,8 @@ namespace Tiimber;
 use Tiimber\Memory;
 use Tiimber\Traits\FolderResolverTrait;
 
+use const Tiimber\Memory\Scopes\{LAYOUT, HELPER};
+
 use Mustache_Engine;
 
 class Dispatcher
@@ -37,20 +39,24 @@ class Dispatcher
   public function dispatch($event, ...$parameters)
   {
     $outlets = [];
+    $helpers = [];
+    foreach (Memory::get(HELPER) as $namespace => $helper) {
+      $pieces = explode('\\', $namespace);
+      $classname = end($pieces);
+      $helpers[strtolower($classname)] = function ($text) use ($helper) {
+        return $helper->render($text);
+      };
+    }
     $m = new Mustache_Engine([
       'cache' => $this->getCacheDir(),
-      'pragmas'=>[Mustache_Engine::PRAGMA_FILTERS],
-      'helpers'=>[
-        'LambdaGet'=>function($lambda){
-          return call_user_func($lambda);
-        }
-      ]
+      'pragmas' => [Mustache_Engine::PRAGMA_FILTERS],
+      'helpers' => $helpers
     ]);
     foreach ($this->resolveEvent($event, $parameters) as $namespace => $view) {
       $outlets[$view::EVENTS[$event]] = '<tiimber-fragment view="' . $namespace . '">' . $m->render($view::TPL, $view->render()) . '</tiimber-fragment>';
     }
 
-    $layout = Memory::get('layouts')->get('\\Blog\\Layouts\\DefaultLayout');
+    $layout = Memory::get(LAYOUT)->get('\\Blog\\Layouts\\DefaultLayout');
     echo $m->render($layout::TPL, $outlets);
   }
 }

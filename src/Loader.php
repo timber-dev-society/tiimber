@@ -1,7 +1,7 @@
 <?php
 namespace Tiimber;
 
-use const Tiimber\Memory\Scopes\{LAYOUT, VIEW};
+use const Tiimber\Memory\Scopes\{LAYOUT, VIEW, HELPER};
 use const Tiimber\Folder\DS;
 
 use Tiimber\Traits\FolderResolverTrait;
@@ -13,6 +13,7 @@ class Loader
   public function __construct(string $namespace)
   {
     $this->viewsLoading($namespace, $this->getBaseDir() . DS . $namespace);
+    $this->helpersLoading($namespace, $this->getBaseDir() . DS . $namespace);
     $this->layoutsLoading($namespace, $this->getBaseDir() . DS . $namespace);
   }
 
@@ -54,10 +55,21 @@ class Loader
       );
     }
   }
+  
+  private function helpersLoading($namespace, $folder)
+  {
+    if (is_dir($folder . DS . ucfirst(HELPER))) {
+      $this->loadFromDir(
+        HELPER,
+        $folder . DS . ucfirst(HELPER),
+        '\\' . $namespace . '\\' . ucfirst(HELPER) . '\\'
+      );
+    }
+  }
 
   private function layoutsLoading($namespace, $folder)
   {
-    if (is_dir($folder . DS . 'Layouts')) {
+    if (is_dir($folder . DS . ucfirst(LAYOUT))) {
       $this->loadFromDir(
         LAYOUT,
         $folder . DS . ucfirst(LAYOUT),

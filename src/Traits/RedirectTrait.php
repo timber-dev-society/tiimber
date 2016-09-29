@@ -5,7 +5,7 @@ use Tiimber\Helpers\UrlHelper;
 /**
  *  Utility helper to upload files
  */
-trait UploadTrait
+trait RedirectTrait
 {
   public function redirect($location, array $args = [])
   {

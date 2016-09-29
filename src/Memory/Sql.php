@@ -29,7 +29,7 @@ class Sql extends Entity
     $mapper = Database::connect()->mapper('Tiimber\Memory\Sql');
     $entity = $mapper->build([
       'scope' => $scope,
-      'values' => $values->serialize();
+      'values' => $values->serialize()
     ]);
     $mapper->save($entity);
   }
@@ -44,6 +44,6 @@ class Sql extends Entity
   {
     $mapper = Database::connect()->mapper('Tiimber\Memory\Sql');
     $entity = $mapper->get($scope);
-    return (new ParameterBag())->unserialize($entity->values)
+    return (new ParameterBag())->unserialize($entity->values);
   }
 }
