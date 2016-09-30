@@ -35,11 +35,18 @@ class Memory
 
   public static function set(string $scope): ParameterBag
   {
+    $instance = self::create($scope);
+    
+    return $instance->scopes->get($scope);
+  }
+  
+  public static function create(string $scope): Memory
+  {
     $instance = self::init();
     if (!$instance->scopes->has($scope)) {
       $instance->scopes->set($scope, new ParameterBag());
     }
-    return $instance->scopes->get($scope);
+    return $instance;
   }
 
   public function memorize(string $scope, string $provider = 'session')

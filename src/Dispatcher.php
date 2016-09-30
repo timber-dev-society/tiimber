@@ -16,18 +16,33 @@ class Dispatcher
 
   private $eventAction;
 
-  public function getEventAction($request)
+  private function getEventAction($request)
   {
     if (!$this->eventAction) {
       $this->eventAction = 'on' . ucfirst(strtolower($request->method));
     }
     return $this->eventAction;
   }
+  
+  private function getWildCards($event)
+  {
+    $wildcards = [$event];
+    $pieces = explode('::', $event);
+    
+    for ($length = count($pieces); $length >= 2; --$length) {
+      $key = $length - 1;
+      $pieces[$key] = '*';
+      $wildcards[] = implode('::', $pieces);
+      unset($pieces[$key]);
+    }
+    
+    return $wildcards;
+  }
 
-  public function dispatchActionEvent($event, $parameters)
+  public function dispatchActionEvent($events, $parameters)
   {
     foreach (Memory::get(ACTION) as $namespace => $action) {
-      if (in_array($event, $action::EVENTS)) {
+      if (count(array_intersect($events, $action::EVENTS)) !== 0) {
         if (method_exists($action, $this->getEventAction(...$parameters))) {
           $action->{$this->getEventAction(...$parameters)}(...$parameters);
         }
@@ -35,21 +50,22 @@ class Dispatcher
     }
   }
 
-  public function resolveViewEvent($event, $parameters)
+  public function resolveViewEvent($events, $parameters)
   {
     foreach (Memory::get(VIEW) as $namespace => $view) {
-      if (isset($view::EVENTS[$event])) {
+      $intersect = array_intersect($events, array_keys($view::EVENTS));
+      if (count($intersect) !== 0) {
+        $event = reset($intersect);
         if (method_exists($view, $this->getEventAction(...$parameters))) {
           $view->{$this->getEventAction(...$parameters)}(...$parameters);
         }
-        yield $namespace => $view;
+        yield $view::EVENTS[$event] => $view;
       }
     }
   }
-
-  public function dispatch($event, ...$parameters)
+  
+  private function getHelper()
   {
-    $outlets = [];
     $helpers = [];
     foreach (Memory::get(HELPER) as $namespace => $helper) {
       $pieces = explode('\\', $namespace);
@@ -58,16 +74,23 @@ class Dispatcher
         return $helper->render($text);
       };
     }
+    return $helpers;
+  }
+
+  public function dispatch($event, ...$parameters)
+  {
+    $outlets = [];
+    
     $m = new Mustache_Engine([
       'cache' => $this->getCacheDir(),
       'pragmas' => [Mustache_Engine::PRAGMA_FILTERS],
-      'helpers' => $helpers
+      'helpers' => $this->getHelper()
     ]);
+    $events = $this->getWildCards($event);
+    $this->dispatchActionEvent($events, $parameters);
 
-    $this->dispatchActionEvent($event, $parameters);
-
-    foreach ($this->resolveViewEvent($event, $parameters) as $namespace => $view) {
-      $outlets[$view::EVENTS[$event]] = '<tiimber-fragment view="' . $namespace . '">' . $m->render($view::TPL, $view->render()) . '</tiimber-fragment>';
+    foreach ($this->resolveViewEvent($events, $parameters) as $outlet => $view) {
+      $outlets[$outlet] = $m->render($view::TPL, $view->render());
     }
 
     $layout = Memory::get(LAYOUT)->get('\\Blog\\Layouts\\DefaultLayout');

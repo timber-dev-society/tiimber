@@ -38,6 +38,7 @@ class Loader
 
   private function viewsLoading($namespace, $folder)
   {
+    Memory::create(VIEW);
     if (is_dir($folder . DS . ucfirst(VIEW))) {
       $this->loadFromDir(
         VIEW,
@@ -59,6 +60,7 @@ class Loader
   
   private function actionsLoading($namespace, $folder)
   {
+    Memory::create(ACTION);
     if (is_dir($folder . DS . ucfirst(ACTION))) {
       $this->loadFromDir(
         ACTION,
@@ -80,6 +82,7 @@ class Loader
   
   private function helpersLoading($namespace, $folder)
   {
+    Memory::create(HELPER);
     if (is_dir($folder . DS . ucfirst(HELPER))) {
       $this->loadFromDir(
         HELPER,

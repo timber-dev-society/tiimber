@@ -27,4 +27,9 @@ abstract class View extends Action
   {
     return slef::TPL;
   }
+  
+  public function render()
+  {
+    return [];
+  }
 }
