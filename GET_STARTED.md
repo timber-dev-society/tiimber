@@ -8,7 +8,7 @@ For use Tiimber, you need intall PHP 7 and composer
 
 ## Intalling Tiimber
 
-`in composer.json`
+`create composer.json`
 
 ```json
 {
@@ -23,17 +23,17 @@ For use Tiimber, you need intall PHP 7 and composer
 }
 ```
 
-then install deps
+then type the following command to install dependencies.
 
 ```bash
-composer install
+./composer.phar install
 ```
 
 ## Project creation
 
 In Tiimber, you need to create an Application class where you put your entry point and for create a Tiimber App, you need to use Tiimber ApplicationTrait.
 
-`in Blog/Application.php`
+`create Blog/Application.php`
 
 ```php
 <?php
@@ -58,7 +58,7 @@ class Application
 
 Then we need to create a index.php and call your Application.
 
-`in index.php`
+`create index.php`
 
 ```php
 <?php
@@ -72,7 +72,7 @@ For create an hello world we need 3 component a route, a layout and a view.
 
 ### Route creation :
 
-`in config/routes.json`
+`create config/routes.json`
 
 ```json
 {
@@ -85,7 +85,7 @@ For create an hello world we need 3 component a route, a layout and a view.
 
 ### Layout creation :
 
-`in Blog\Layouts\DefaultLayout.php`
+`create Blog\Layouts\DefaultLayout.php`
 
 ```php
 <?php
@@ -111,7 +111,7 @@ We need a to print `Hello world` into the `content` outlet define into the `Defa
 
 And to do that create your view like this.
 
-`in Blog\Views\HelloWorldView.php`
+`create Blog\Views\HelloWorldView.php`
 
 ```php
 <?php
