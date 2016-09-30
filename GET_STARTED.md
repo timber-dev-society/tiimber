@@ -107,6 +107,8 @@ The EVENTS constant is array who the key represent the event to listen and outle
 
 The TPL constant is your view template.
 
+We need a to print "Hello world" into the "content" define into the "DefaultLayout" and we need to do that when a "request" is received on "hello" route defined into "routes.json".
+
 `in Blog\Views\HelloWorldView.php`
 
 ```php
@@ -122,7 +124,7 @@ class HelloWorldView extends View
   ];
 
   const TPL = <<<EOF
-hello world.
+Hello world.
 EOF;
 }
 ```
