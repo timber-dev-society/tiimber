@@ -29,9 +29,9 @@ then install deps
 composer install
 ```
 
-## Create the project
+## Project creation
 
-In Tiimber, you need to create an Application class where you put your entry point and for that you need to use Tiimber ApplicationTrait.
+In Tiimber, you need to create an Application class where you put your entry point and for create a Tiimber App, you need to use Tiimber ApplicationTrait.
 
 `in Blog/Application.php`
 
@@ -56,7 +56,7 @@ class Application
 
 ```
 
-Then we need to create your index.php and call your Application.
+Then we need to create a index.php and call your Application.
 
 `in index.php`
 
