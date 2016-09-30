@@ -68,7 +68,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 ## Hello world
 
-For create an hello world we need 3 component a route, a layout and a view.
+To create an hello world we need 3 components a route, a layout and a view.
 
 ### Route creation :
 
@@ -77,13 +77,19 @@ For create an hello world we need 3 component a route, a layout and a view.
 ```json
 {
   "hello": {
-    "route": "/"
+    "route": "/hello"
   }
 }
 
 ```
 
 ### Layout creation :
+
+A minimal Layout is composed by one constant.
+
+The const TPL is your template. A Layout template expose outlets and the way to declare an outlet is by encapsulating it into `{{{ }}}`.
+
+In the following Layout we expose only one outlet `content`.
 
 `create Blog\Layouts\DefaultLayout.php`
 
@@ -107,7 +113,7 @@ The EVENTS constant is array who the key represent the event to listen and outle
 
 The TPL constant is your view template.
 
-We need a to print `Hello world` into the `content` outlet define into the `DefaultLayout` when a `request` is received on `hello` route defined into `routes.json`.
+To create the `HelloWorldView`, we need to print `Hello world` into `content` outlet defined into the `DefaultLayout` when a `request` is received in `hello` route defined into `routes.json` file.
 
 And to do that create your view like this.
 
@@ -129,10 +135,12 @@ class HelloWorldView extends View
 }
 ```
 
-And is time to test :
+### Now you can test it :
+
+Start a php server
 
 ```bash
 php -S localhost:1337 index.php
 ```
 
-And try it in your navigator.
+And try it in your navigator by calling the URL `localhost:1337/hello`.
