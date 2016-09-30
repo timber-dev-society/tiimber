@@ -70,7 +70,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 For create an hello world we need 3 component a route, a layout and a view.
 
-Route creation :
+### Route creation :
 
 `in config/routes.json`
 
@@ -83,7 +83,7 @@ Route creation :
 
 ```
 
-Strict minimal Layout creation :
+### Layout creation :
 
 `in Blog\Layouts\DefaultLayout.php`
 
@@ -99,7 +99,7 @@ class DefaultLayout extends Layout
 }
 ```
 
-And View creation :
+### View creation :
 
 A minimal view it's composed of two constants.
 
@@ -115,7 +115,7 @@ namespace Blog\Views;
 
 use Tiimber\View;
 
-class IndexView extends View
+class HelloWorldView extends View
 {
   const EVENTS = [
     'request::hello' => 'content'
