@@ -101,6 +101,12 @@ class DefaultLayout extends Layout
 
 And View creation :
 
+A minimal view it's composed of two constants.
+
+The EVENTS constant is array who the key represent the event to listen and outlet location.
+
+The TPL constant is your view template.
+
 `in Blog\Views\HelloWorldView.php`
 
 ```php
@@ -112,16 +118,19 @@ use Tiimber\View;
 class IndexView extends View
 {
   const EVENTS = [
-    'request::index' => 'content'
+    'request::hello' => 'content'
   ];
 
   const TPL = <<<EOF
-<p>hello {{planet}}.</p>
+hello world.
 EOF;
-
-  public function render()
-  {
-    return ['planet' => 'earth'];
-  }
 }
 ```
+
+And is time to test :
+
+```bash
+php -S localhost:1337 index.php
+```
+
+And try it in your navigator.
