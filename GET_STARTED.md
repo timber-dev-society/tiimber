@@ -1,14 +1,20 @@
-# How to use Tiimber
+- [Tiimber](#tiimber)
+  - [Requierement](#requierement)
+  - [Installing Tiimber](#installing-tiimber)
+  - [Project creation](#project-creation)
+  - [Hello world](#hello-word)
+
+# Tiimber
 
 The project of this file is for purpose to create a very little blog to see how organize the code and know how work tiimber.
 
 ## Requierement
 
-For use Tiimber, you need intall PHP 7 and composer
+For use Tiimber, you need intall PHP 7 and [composer](https://getcomposer.org/download/)
 
 ## Intalling Tiimber
 
-`create composer.json`
+> create composer.json
 
 ```json
 {
@@ -33,7 +39,7 @@ then type the following command to install dependencies.
 
 In Tiimber, you need to create an Application class where you put your entry point and for create a Tiimber App, you need to use Tiimber ApplicationTrait.
 
-`create Blog/Application.php`
+> create Blog/Application.php
 
 ```php
 <?php
@@ -58,7 +64,7 @@ class Application
 
 Then we need to create a index.php and call your Application.
 
-`create index.php`
+> create index.php
 
 ```php
 <?php
@@ -72,7 +78,7 @@ To create an hello world we need 3 components a route, a layout and a view.
 
 ### Route creation :
 
-`create config/routes.json`
+> create config/routes.json
 
 ```json
 {
@@ -91,7 +97,7 @@ The const TPL is your template. A Layout template expose outlets and the way to 
 
 In the following Layout we expose only one outlet `content`.
 
-`create Blog\Layouts\DefaultLayout.php`
+> create Blog\Layouts\DefaultLayout.php
 
 ```php
 <?php
@@ -113,11 +119,11 @@ The EVENTS constant is array who the key represent the event to listen and outle
 
 The TPL constant is your view template.
 
-To create the `HelloWorldView`, we need to print `Hello world` into `content` outlet defined into the `DefaultLayout` when a `request` is received in `hello` route defined into `routes.json` file.
+To create the *HelloWorldView*, we need to print *Hello world* into `content` outlet declared into the `DefaultLayout` when a `request` is received in `hello` route defined into *config/routes.json* file.
 
 And to do that create your view like this.
 
-`create Blog\Views\HelloWorldView.php`
+> create Blog\Views\HelloWorldView.php
 
 ```php
 <?php
@@ -143,4 +149,4 @@ Start a php server
 php -S localhost:1337 index.php
 ```
 
-And try it in your navigator by calling the URL `localhost:1337/hello`.
+And try it in your navigator by calling the URL http://localhost:1337/hello .
