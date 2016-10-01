@@ -17,9 +17,13 @@ class Request
 
   public $referer = null;
 
+  public $definition;
+
+  public $matches;
+
   public function __construct()
   {
-    $this->post = (object)$_POST;
+    $this->post = new ParameterBag($_POST);
     $this->get = new ParameterBag($_GET);
     if ($_SERVER['QUERY_STRING']) {
       $pos = strpos($_SERVER['REQUEST_URI'], $_SERVER['QUERY_STRING']);
@@ -29,8 +33,7 @@ class Request
     }
     $this->method = $_SERVER['REQUEST_METHOD'];
     $this->cookie = new ParameterBag($_COOKIE);
-    if (isset($_SERVER['HTTP_REFERER'])) {
-      $this->referer = $_SERVER['HTTP_REFERER'];
-    }
+
+    $this->referer = $_SERVER['HTTP_REFERER'] ?? null;
   }
 }

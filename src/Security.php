@@ -32,15 +32,15 @@ class Security
     $this->refresh();
   }
 
-  public function __get($property)
+  public function __get(string $property): bool
   {
     if (in_array($property, static::$accessibleProperties)) {
       return $this->{$property};
     }
-    return null;
+    return false;
   }
 
-  public static function load()
+  public static function load(): Security
   {
     if (!self::$instance) {
       self::$instance = new self();
@@ -48,7 +48,7 @@ class Security
     return self::$instance;
   }
 
-  public function setUser($user)
+  public function setUser(UserSecurityInterface $user): bool
   {
     if ($user instanceof UserSecurityInterface) {
       $this->user = $user;
@@ -59,20 +59,12 @@ class Security
     return false;
   }
 
-  public function getUser()
+  public function getUser(): UserSecurityInterface
   {
     return $this->user;
   }
 
-  public function getUserInfos()
-  {
-    $infos['isAuthenticated'] = $this->isAuthenticated;
-    $infos['role'] = $this->user->getRole();
-    $infos['username'] = $this->user->getUsername();
-    return $infos;
-  }
-
-  public function setSecurityDefinition($security)
+  public function setSecurityDefinition($security): Security
   {
     $this->refresh();
     $this->autorize($security->role);
@@ -80,14 +72,10 @@ class Security
     return $this;
   }
 
-  public function authenticate($request)
+  public function authenticate($parameter): bool
   {
-    $namespace = $this->config->user_table_namespace;
-    $table = new $namespace();
-    if (!$table instanceof SecurityProviderInterface) {
-      throw new Exception($namespace . ' must implement Tiimber\Interfaces\SecurityProviderInterface');
-    }
-    $user = $table->loadUserByUsernamePassword($request->post->login, self::hashPassword($request->post->password));
+    $provider = $this->getSecurityProvider();
+    $user = $provider->loadUser($parameter);
 
     return $this->setUser($user);
   }
@@ -99,22 +87,28 @@ class Security
     }
   }
 
+  private function getSecurityProvider(): SecurityProviderInterface
+  {
+    $namespace = $this->config->get('security_provider');
+    $provider = new $namespace();
+    if (!$provider instanceof SecurityProviderInterface) {
+      throw new Exception($namespace . ' must implement Tiimber\Interfaces\SecurityProviderInterface');
+    }
+    return $provider;
+  }
+
   private function refresh()
   {
     if (Session::load()->get(static::SESSION_ID, false)) {
-      $namespace = $this->config->user_table_namespace;
-      $table = new $namespace();
-      if (!$table instanceof SecurityProviderInterface) {
-        throw new Exception($namespace . ' must implement Tiimber\Interfaces\SecurityProviderInterface');
-      }
-      $this->user = $table->loadUserByIdentifier(Session::load()->get(static::SESSION_ID));
+      $provider = $this->getSecurityProvider();
+      $this->user = $provider->loadUserByIdentifier(Session::load()->get(static::SESSION_ID));
       $this->isAuthenticated = ($this->user !== null);
     }
   }
 
-  public function isAuthenticated($role = false)
+  public function isAuthenticated(string $role = null): bool
   {
-    if ($role) {
+    if (!is_null($role)) {
       $this->autorize($role);
       return $this->isAuthenticated && $this->isAuthorized;
     }
@@ -122,13 +116,7 @@ class Security
     return $this->isAuthenticated;
   }
 
-  public static function hashPassword($password)
-  {
-    return sha1($password . self::load()->config->salt);
-    //return password_hash($password, PASSWORD_BCRYPT, ['salt' => self::load()->config->salt]);
-  }
-
-  private function autorize($role)
+  private function autorize(string $role)
   {
     if ($this->isAuthenticated) {
       $this->isAuthorized = $this->user->hasRole($role);

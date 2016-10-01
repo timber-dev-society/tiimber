@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Tiimber\Interfaces;
 
 use Tiimber\Interfaces\UserSecurityInterface;
@@ -12,7 +13,7 @@ interface SecurityProviderInterface
    * @param $password String
    * @return UserSecurityInterface
    */
-  public function loadUserByUsernamePassword($username, $password);
+  public function loadUser(array $parameters): UserSecurityInterface;
 
   /**
    * Find the user with this identifier
@@ -20,7 +21,7 @@ interface SecurityProviderInterface
    * @param $id String|Interger
    * @return UserSecurityInterface
    */
-  public function loadUserByIdentifier($id);
+  public function loadUserByIdentifier($id): UserSecurityInterface;
 
   /**
    * Save the user

@@ -1,7 +1,7 @@
 version: "2"
 services:
-  phpfpm:
-    image: bitnami/php-fpm:7.0.6-r0
+  testenv:
+    image: php:7-alpine
     volumes:
-      - ./:/app
-    command: vendor/bin/phpunit tests/
+      - ./:/usr/src/myapp
+    command: /usr/src/myapp/vendor/bin/phpunit /usr/src/myapp/tests/ --bootstrap /usr/src/myapp/tests/bootstrap.php

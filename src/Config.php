@@ -1,12 +1,14 @@
 <?php
 namespace Tiimber;
 
-use Tiimber\Application;
 use Tiimber\Exception;
 use Tiimber\ParameterBag;
+use Tiimber\Traits\FolderResolverTrait;
 
 class Config
 {
+  use FolderResolverTrait;
+
   private static $instance;
 
   private $config = [];
@@ -29,11 +31,8 @@ class Config
     if (!self::$instance) {
       self::$instance = new self();
     }
-    if (isset(self::$instance->config[$key])) {
-      return self::$instance->config[$key];
-    }
 
-    return $default;
+    return self::$instance->config[$key] ?? $default;
   }
 
   private function readJsonFile($filename)
@@ -47,7 +46,7 @@ class Config
 
   private function loadConfigFiles()
   {
-    $files = glob($this->getConfigdir() . '*.json', GLOB_BRACE);
+    $files = glob($this->getConfigdir() . '*.json');
     foreach($files as $file) {
       $this->config[basename($file, '.json')] = new ParameterBag($this->readJsonFile($file));
     }
@@ -58,20 +57,15 @@ class Config
     $folders = array_diff(scandir($this->getConfigdir()), ['..', '.']);
 
     foreach($folders as $folder) {
-      if (!is_dir($this->getConfigdir() . $folder)) {
+      if (!is_dir($this->getConfigDir() . $folder)) {
         continue;
       }
-      $files = glob($this->getConfigdir() . $folder . '/*.json', GLOB_BRACE);
+      $files = glob($this->getConfigDir() . $folder . '/*.json');
       $content = [];
       foreach($files as $file) {
         $content = array_merge($content, (array)$this->readJsonFile($file));
       }
       $this->config[basename($folder)] = new ParameterBag($content);
     }
-  }
-
-  private function getConfigDir()
-  {
-    return Application::getConfigDir();
   }
 }

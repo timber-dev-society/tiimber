@@ -1,31 +1,23 @@
 <?php
 namespace Tiimber;
 
-use Tiimber\Application;
+use Tiimber\Traits\LoggerTrait;
 
 class Exception extends \Exception
 {
+  use LoggerTrait;
+
   public function __construct($message, $code = 0)
   {
     parent::__construct($message, $code);
     $this->writeLog($message);
   }
 
-
-  public function __toString()
+  protected function writeLog($message)
   {
-    return $this->message;
-  }
-
-  protected function writeLog($e)
-  {
-    $uri = Application::getBaseDir()."/Log/log.txt";
     $date = date("d/m/Y ~ G\:i  : ");
-    $message = $date.$e;
+    $message = $date . $message;
 
-    $log = fopen ($uri, "a+");
-    fputs($log, $message);
-    fputs($log, "\n");
-    fclose($log);
+    $this->critical($message);
   }
 }
