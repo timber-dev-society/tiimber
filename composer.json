@@ -18,7 +18,6 @@
         "psr/log": "^1.0",
         "psr/http-message": "^1.0",
         "symfony/routing": "^3.0",
-        "vlucas/spot2": "^2.2",
         "mustache/mustache": "^2.10"
     },
     "require-dev": {

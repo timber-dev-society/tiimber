@@ -1,6 +1,8 @@
 <?php
 namespace Tiimber\Memory\Scopes;
 
+const HTTP = 'http';
+
 const VIEW = 'views';
 
 const ACTION = 'actions';
