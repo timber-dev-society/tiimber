@@ -1,7 +1,7 @@
 <?php
-namespace Tiimber;
+namespace Tiimber\Exceptions;
 
-use Tiimber\Exception;
+use Tiimber\Exceptions\Exception;
 
 class ViewException extends Exception
 {

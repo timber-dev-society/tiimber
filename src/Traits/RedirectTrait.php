@@ -2,6 +2,9 @@
 namespace Tiimber\Traits;
 
 use Tiimber\Helpers\UrlHelper;
+use Tiimber\Memory;
+
+use const Tiimber\Consts\{Scopes\HTTP, Http\HEADER};
 /**
  *  Utility helper to upload files
  */
@@ -16,6 +19,6 @@ trait RedirectTrait
       $location = $url->render();
     }
 
-    header('Location: ' . $location);
+    Memory::get(HTTP)->set(HEADER, ['Location' => $location]);
   }
 }

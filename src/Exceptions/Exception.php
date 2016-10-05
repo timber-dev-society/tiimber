@@ -1,5 +1,5 @@
 <?php
-namespace Tiimber;
+namespace Tiimber\Exceptions;
 
 use Tiimber\Traits\LoggerTrait;
 
@@ -16,7 +16,7 @@ class Exception extends \Exception
   protected function writeLog($message)
   {
     $date = date("d/m/Y ~ G\:i  : ");
-    $message = $date . $message;
+    $message = $date . $message . "\n";
 
     $this->critical($message);
   }

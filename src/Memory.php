@@ -3,13 +3,17 @@ namespace Tiimber;
 
 use Tiimber\ParameterBag;
 use Tiimber\Memory\ProviderResolver;
-use Tiimber\Exception;
+use Tiimber\Exceptions\Exception;
+
+use Evenement\EventEmitterTrait;
 
 class Memory
 {
   private static $instance;
 
   private $scopes;
+  
+  private $events;
 
   private function __construct()
   {
@@ -47,6 +51,17 @@ class Memory
       $instance->scopes->set($scope, new ParameterBag());
     }
     return $instance;
+  }
+  
+  public static function events()
+  {
+    $instance = self::init();
+    if (!$instance->events) {
+      $instance->events = new class {
+        use EventEmitterTrait;
+      };
+    }
+    return $instance->events;
   }
 
   public function memorize(string $scope, string $provider = 'session')

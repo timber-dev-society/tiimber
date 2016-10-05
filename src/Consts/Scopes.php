@@ -1,5 +1,5 @@
 <?php
-namespace Tiimber\Memory\Scopes;
+namespace Tiimber\Consts\Scopes;
 
 const HTTP = 'http';
 

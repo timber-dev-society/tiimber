@@ -1,5 +1,5 @@
 <?php
-namespace Tiimber\Folder;
+namespace Tiimber\Consts\Folder;
 
 const SCOPE = 'folders';
 

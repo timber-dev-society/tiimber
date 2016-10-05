@@ -25,7 +25,7 @@ abstract class View extends Action
 
   public function __toString()
   {
-    return slef::TPL;
+    return self::TPL;
   }
   
   public function render()

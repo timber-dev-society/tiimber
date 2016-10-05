@@ -2,7 +2,7 @@
 namespace Tiimber\Traits;
 
 use Tiimber\Memory;
-use const Tiimber\Folder\{SCOPE, BASE, CONFIG, RESOURCE, CACHE, DS};
+use const Tiimber\Consts\Folder\{SCOPE, BASE, CONFIG, RESOURCE, CACHE, DS};
 
 trait FolderResolverTrait
 {

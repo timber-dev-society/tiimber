@@ -1,8 +1,8 @@
 <?php
 namespace Tiimber;
 
-use const Tiimber\Memory\Scopes\{LAYOUT, VIEW, HELPER, ACTION};
-use const Tiimber\Folder\DS;
+use const Tiimber\Consts\Scopes\{LAYOUT, VIEW, HELPER, ACTION};
+use const Tiimber\Consts\Folder\DS;
 
 use Tiimber\Traits\FolderResolverTrait;
 

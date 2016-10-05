@@ -2,13 +2,19 @@
 
 namespace Tiimber;
 
+use Tiimber\Memory;
+use Tiimber\Memory\Scope\HTTP;
+use Tiimber\Memory\Http\REQUEST;
+
 class Session
 {
   private static $instance;
 
   private function __construct()
   {
-    session_start();
+    if (isset($_SESSION)) {
+      session_start();
+    }
   }
 
   /**

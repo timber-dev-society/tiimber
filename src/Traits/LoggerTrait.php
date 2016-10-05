@@ -38,6 +38,6 @@ trait LoggerTrait
   {
     $filepath = $this->getLogFolder();
     $date = date('d/m/Y ~ G\:i ');
-    file_put_contents($filepath, $date . '[' . $level . '] ' . $message, FILE_APPEND);
+    file_put_contents($filepath, $date . '[' . $level . '] ' . $message . "\n", FILE_APPEND);
   }
 }
