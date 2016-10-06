@@ -3,6 +3,7 @@
 namespace Tiimber\Traits\Server;
 
 use React\EventLoop\Factory;
+use React\Promise\Promise;
 use React\Socket\Server as Socket;
 use React\Http\{Server as Http, Request, Response};
 
@@ -38,21 +39,46 @@ trait ReactTrait
       Memory::get(HTTP)->get(HOST, '127.0.0.1')
     );
     
+    Memory::events()->on('stop::rendering', function () {
+      Memory::get(HTTP)->set(CODE, 200); 
+      Memory::get(HTTP)->set(HEADER, DEFAULT_HEADERS);
+    });
+    
     $loop->run();
   }
 
   public function runApp(): callable
   {
     return function (Request $request, Response $response) {
-      if ($request->getMethod() === 'POST') {
-        $request->on('data', function ($data) use ($request, $response) {
-          $tiRequest = new TiRequest($request, $data);
-          $result = $this->emitRequest($tiRequest, $response);
-          $response->end($result);
+      Memory::events()->emit('on::request', []);
+      try {
+        $this->log('info', 'new ' . $request->getMethod() . ' request on ' . $request->getPath());
+        
+        Memory::events()->once('response::end', function ($content) use ($response) {
+          $this->log('info', 'Response code ' . Memory::get(HTTP)->get(CODE, 200));
+          $this->log('info', 'Response Header ' . print_r(Memory::get(HTTP)->get(HEADER, DEFAULT_HEADERS), true));
+
+          $response->writeHead(
+            Memory::get(HTTP)->get(CODE, 200), 
+            Memory::get(HTTP)->get(HEADER, DEFAULT_HEADERS)
+          );
+
+          $response->end($content);
+          
+          Memory::events()->emit('stop::rendering', []);
         });
-      } else {
-        $result = $this->emitRequest($request, $response);
-        $response->end($result);
+
+        if ($request->getMethod() === 'POST') {
+          $request->on('data', function ($data) use ($request, $response) {
+            $tiRequest = new TiRequest($request, $data);
+            $this->emitRequest($tiRequest, $response);
+          });
+        } else {
+          $this->emitRequest($request, $response);
+        }
+      } catch (\Exception $e) {
+        $this->log('error', $e->getMessage());
+        $this->log('error', 'Trace : ' . "\n" . $e->getTraceAsString());
       }
     };
   }
@@ -83,13 +109,8 @@ trait ReactTrait
       Memory::get(HTTP)->set(CODE, 500);
     }
 
-    $response->writeHead(
-      Memory::get(HTTP)->get(CODE, 200), 
-      Memory::get(HTTP)->get(HEADER, DEFAULT_HEADERS)
-    );
-    
     $layout = Memory::get(LAYOUT)->get('\\Blog\\Layouts\\DefaultLayout');
-    return $render->render($layout);
+    Memory::events()->emit('response::end', ['content' => $render->render($layout)]);
   }
   
   public function setHost(string $host)

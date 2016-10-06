@@ -18,11 +18,20 @@ class Event
 
   private $eventAction;
   
+  private $isLocked;
+  
   private $scope;
   
   public function __construct($scope)
   {
     $this->scope = $scope;
+    Memory::events()->on('on::request', function () {
+      $this->isLocked = false;
+    });
+    Memory::events()->on('stop::rendering', function () {
+      $this->eventAction = false;
+      $this->isLocked = true;
+    });
   }
 
   public function dispatch(Renderer $renderer, $dispatcher, string $event, array $parameters)
@@ -36,8 +45,8 @@ class Event
   
   public function attachEvents()
   {
-    foreach (Memory::get(ACTION) as $action) {
-      $this->attachActionEvents($action);
+    foreach (Memory::get(ACTION) as $namespace => $action) {
+      $this->attachActionEvents($action, $namespace);
     }
     foreach (Memory::get(VIEW) as $namespace => $view) {
       $this->attachViewEvents($view, $namespace);
@@ -49,12 +58,12 @@ class Event
     return strpos($event, $this->scope) === 0;
   }
 
-  private function attachActionEvents(Action $action)
+  private function attachActionEvents(Action $action, $namespace)
   {
     foreach ($action::EVENTS as $event) {
       if (strpos($event, $this->scope) === 0) {
-        $this->on($event, function ($request, $args) use ($action, $event) {
-          $this->log('info', $event);
+        $this->on($event, function ($request, $args) use ($action, $event, $namespace) {
+          $this->log('info', $namespace . ' intersept ' . $event);
           $this->executeAction($action, $request, $args);
           if (method_exists($action, 'call')) {
             $action->call($request, $args);
@@ -69,6 +78,7 @@ class Event
     $pieces = explode('\\', $namespace);
     $pieces = array_slice($pieces, 3);
     $event = strtolower(implode('::', $pieces));
+
     $this->dispatcher->emit(
       'render', 
       str_replace('view', '', $event),
@@ -85,10 +95,12 @@ class Event
     foreach ($view::EVENTS as $event => $outlet) {
       if (strpos($event, $this->scope) === 0) {
         $this->on($event, function ($request, $args) use ($view, $outlet, $namespace, $event) {
-          $this->log('info', $event);
-          $this->propageRenderEvent($namespace, $request, $args);
-          $this->executeAction($view, $request, $args);
-          $this->renderer->outlet($outlet, $view);
+          if (!$this->isLocked) {
+            $this->log('info', $namespace . ' intersept ' . $event);
+            $this->propageRenderEvent($namespace, $request, $args);
+            $this->executeAction($view, $request, $args);
+            $this->renderer->outlet($outlet, $view);
+          }
         });
       }
     }
@@ -121,6 +133,7 @@ class Event
   {
     $event = $this->getEventAction($request);
     if (method_exists($action, $event)) {
+      $this->log('info', $event . ' method called');
       $action->{$event}($request, $args);
     }
   }
