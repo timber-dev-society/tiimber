@@ -8,11 +8,11 @@ use Tiimber\{Action, View, Renderer, Memory, Interfaces\DispatcherInterface, Tra
 
 use const Tiimber\Consts\Scopes\{ACTION, VIEW};
 use const Tiimber\Consts\Events\{ERROR, RENDER, REQUEST};
+use const Tiimber\Consts\LogLevel\{INFO};
 
 class Event
 {
-  use EventEmitterTrait;
-  use LoggerTrait;
+  use EventEmitterTrait, LoggerTrait;
 
   private $renderer;
 
@@ -96,7 +96,7 @@ class Event
       if (strpos($event, $this->scope) === 0) {
         $this->on($event, function ($request, $args) use ($view, $outlet, $namespace, $event) {
           if (!$this->isLocked) {
-            $this->log('info', $namespace . ' intersept ' . $event);
+            $this->log(INFO, $namespace . ' intersept ' . $event);
             $this->propageRenderEvent($namespace, $request, $args);
             $this->executeAction($view, $request, $args);
             $this->renderer->outlet($outlet, $view);
@@ -133,7 +133,7 @@ class Event
   {
     $event = $this->getEventAction($request);
     if (method_exists($action, $event)) {
-      $this->log('info', $event . ' method called');
+      $this->log(INFO, $event . ' method called');
       $action->{$event}($request, $args);
     }
   }

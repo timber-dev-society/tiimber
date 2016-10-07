@@ -14,6 +14,7 @@ use Tiimber\{Config, Dispatcher, Memory, Renderer, Traits\LoggerTrait, Http\Requ
 use const Tiimber\Consts\Scopes\{HTTP, LAYOUT};
 use const Tiimber\Consts\Http\{PORT, HOST, CODE, HEADER, DEFAULT_HEADERS};
 use const Tiimber\Consts\Events\{ERROR, RENDER, REQUEST};
+use const Tiimber\Consts\LogLevel\{INFO, ERROR as LOG_ERROR};
 
 trait ServerTrait
 {
@@ -52,20 +53,17 @@ trait ServerTrait
     return function (Request $request, Response $response) {
       Memory::events()->emit('on::request', []);
       try {
-        $this->log('info', 'new ' . $request->getMethod() . ' request on ' . $request->getPath());
+        $this->log(INFO, 'new ' . $request->getMethod() . ' request on ' . $request->getPath());
         
         Memory::events()->once('response::end', function ($content) use ($response) {
-          $this->log('info', 'Response code ' . Memory::get(HTTP)->get(CODE, 200));
-          $this->log('info', 'Response Header ' . print_r(Memory::get(HTTP)->get(HEADER, DEFAULT_HEADERS), true));
 
           $response->writeHead(
             Memory::get(HTTP)->get(CODE, 200), 
             Memory::get(HTTP)->get(HEADER, DEFAULT_HEADERS)
           );
+          Memory::events()->emit('stop::rendering', []);
 
           $response->end($content);
-          
-          Memory::events()->emit('stop::rendering', []);
         });
 
         if ($request->getMethod() === 'POST') {
@@ -77,8 +75,8 @@ trait ServerTrait
           $this->emitRequest($request, $response);
         }
       } catch (\Exception $e) {
-        $this->log('error', $e->getMessage());
-        $this->log('error', 'Trace : ' . "\n" . $e->getTraceAsString());
+        $this->log(LOG_ERROR, $e->getMessage());
+        $this->log(LOG_ERROR, 'Trace : ' . PHP_EOL . $e->getTraceAsString());
       }
     };
   }
@@ -98,7 +96,7 @@ trait ServerTrait
         'request' => $request,
         'args' => []
       ]);
-      Memory::get(HTTP)->set(CODE, 500);
+      Memory::get(HTTP)->set(CODE, 404);
     } catch (\Exception $e) {
       $this->log('error', $e->getMessage());
       $this->log('error', $e->getTraceAsString());

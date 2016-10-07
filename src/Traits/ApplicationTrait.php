@@ -4,6 +4,7 @@ include dirname(__DIR__) . '/Consts/Folder.php'; // Tweak for "use const" works.
 include dirname(__DIR__) . '/Consts/Scopes.php'; // Tweak for "use const" works. Need better autoload
 include dirname(__DIR__) . '/Consts/Http.php'; // Tweak for "use const" works. Need better autoload
 include dirname(__DIR__) . '/Consts/Events.php'; // Tweak for "use const" works. Need better autoload
+include dirname(__DIR__) . '/Consts/LogLevel.php'; // Tweak for "use const" works. Need better autoload
 
 use Tiimber\{Memory, Loader, Request};
 use const Tiimber\Consts\Folder\{BASE, CONFIG, RESOURCE, CACHE};
