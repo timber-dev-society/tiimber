@@ -1,6 +1,6 @@
 <?php
 
-namespace Tiimber\Traits\Server;
+namespace Tiimber\Traits;
 
 use React\EventLoop\Factory;
 use React\Promise\Promise;
@@ -15,7 +15,7 @@ use const Tiimber\Consts\Scopes\{HTTP, LAYOUT};
 use const Tiimber\Consts\Http\{PORT, HOST, CODE, HEADER, DEFAULT_HEADERS};
 use const Tiimber\Consts\Events\{ERROR, RENDER, REQUEST};
 
-trait ReactTrait
+trait ServerTrait
 {
   use LoggerTrait;
 

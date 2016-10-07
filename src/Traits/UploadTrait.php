@@ -21,7 +21,7 @@ trait UploadTrait
     if (!is_null($name)) {
       $extension = pathinfo($_FILES[$identifier]['name'], PATHINFO_EXTENSION);
       if (file_exists($uploadDir . $name . $extension)) {
-        $filepath = = $uploadDir . $name . '-' . substr(sha1(rand()), 0 , 4) . '.' . $extension;
+        $filepath = $uploadDir . $name . '-' . substr(sha1(rand()), 0 , 4) . '.' . $extension;
       }
     }
     if (!move_uploaded_file($_FILES[$field]['tmp_name'], $filepath)){

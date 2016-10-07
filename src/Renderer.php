@@ -9,6 +9,13 @@ use Tiimber\Renderer\Engine;
 class Renderer
 {
   private $outlets = [];
+  
+  public function __construct()
+  {
+    Memory::events()->on('stop::rendering', function () {
+      $this->outlets = [];
+    });
+  }
 
   public function outlet($name, $view)
   {
