@@ -5,6 +5,7 @@
   - [Hello world](#hello-word)
   - [Templating a Layout](#templating-a-layout)
   - [Render errors](#render-errors)
+  - [Use logger](#use-logger)
   - [Dynamize your views](#dynamize-your-views)
   - [Views and Actions](#views-and-actions)
   - [Sub rendering](#sub-rendering)
@@ -360,6 +361,36 @@ class FooterView extends View
 Now if you restart your server and go to the home page, you have to see the error.
 
 You can create a server error to who listen `error::500` event.
+
+
+## Use logger
+
+You implemented some views and some errors, but certainly want see what happen in Tiimber. For that you can use a logger. Currently there is two types of logger FileLogger and SysLogger. In our case we gonna use SysLogger.
+
+> in Blog\Application.php
+
+```php
+<?php
+// ...
+use Tiimber\Loggers\SysLogger as Logger;
+
+class Application
+{
+  private function prepare()
+  {
+    // ...
+    (new Logger());
+  }
+  // ...
+}
+
+```
+
+Thats all.
+
+Now if you restart your server, you certainly show lot of line when you call a page from your navigator.
+
+You can implement your own if you want, just take a quick look of FileLogger or SysLogger.
 
 
 ## Dynamize your views
