@@ -701,7 +701,7 @@ To finish our app we go to create a quick identification based on php sessions. 
 
 ```php
 <?php
-
+// ...
 use Tiimber\{View, Session};
 
 class NavigationView extends View
