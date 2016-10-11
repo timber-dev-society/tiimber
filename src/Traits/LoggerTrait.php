@@ -3,11 +3,6 @@ namespace Tiimber\Traits;
 
 use Psr\Log\LoggerTrait as PsrLoggerTrait;
 
-use Tiimber\Application;
-use Tiimber\Config;
-use Tiimber\ParameterBag;
-use Tiimber\Traits\FolderResolverTrait;
-
 use Tiimber\Memory;
 
 trait LoggerTrait
