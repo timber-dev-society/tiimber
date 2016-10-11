@@ -794,7 +794,7 @@ Like the article, we go to create an action to save our user in session.
 
 ```php
 <?php
-namespace Blog\Actions\User;
+namespace Blog\Actions\Users;
 
 use Tiimber\{Action, Session, Traits\RedirectTrait};
 
