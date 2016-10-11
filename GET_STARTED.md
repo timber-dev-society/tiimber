@@ -857,7 +857,9 @@ class ShowView extends View
   const TPL = <<<HTML
 <h2>{{article.title}}</h2>
 <p>{{article.content}}</p>
-<p>Created by {{article.author}}</p>
+{{#article.author}}
+  <p>Created by {{article.author}}</p>
+{{/article.author}}
 HTML;
   // ...
 }
