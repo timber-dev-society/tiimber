@@ -831,7 +831,7 @@ class SaveAction extends Action
   public function onPost($request, $args)
   {
     // ...
-    $article->author = Session::load()->-get('user');
+    $article->author = Session::load()->get('user');
 
     $id = R::store($this->article);
     $this->redirect('/'.$id);
