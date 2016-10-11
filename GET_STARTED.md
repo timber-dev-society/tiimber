@@ -482,7 +482,7 @@ If you relaunch the server and visit the home page you see `No article available
   "article::show": {
     "route": "/{id}",
     "params": {
-      "id": "\d+"
+      "id": "[0-9]+"
     }
   },
   // ...
