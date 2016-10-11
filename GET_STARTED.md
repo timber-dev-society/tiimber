@@ -321,6 +321,41 @@ class NotFoundView extends View
 
 ```
 
+And we have to update our navigation and footer
+
+> in Blog\Views\NavigationView.php
+
+```php
+<?php
+// ...
+class NavigationView extends View
+{
+  const EVENTS = [
+    'request::*' => 'navigation',
+    'error::*' => 'navigation'
+  ];
+// ...
+}
+
+```
+
+> in Blog\Views\FooterView.php
+
+```php
+<?php
+// ...
+class FooterView extends View
+{
+  const EVENTS = [
+    'request::*' => 'footer',
+    'error::*' => 'footer'
+  ];
+// ...
+}
+
+```
+
+
 Now if you restart your server and go to the home page, you have to see the error.
 
 You can create a server error to who listen `error::500` event.
@@ -655,3 +690,177 @@ In this action create a create or update an article then when the save is done w
 You can see we use the method `onPost`. By this way we don't pass into the onGet on the view. Is really important to specify `method="post"` in your form to access at the goods methods into your view an action.
 
 > Tips: a view and a action have access to the methods onGet and onPost;
+
+
+## Sub rendering
+
+To finish our app we go to create a quick identification based on php sessions. And use render event to add new section.
+
+> in Blog\Views\NavigationView.php
+
+```php
+<?php
+
+use Tiimber\{View, Session};
+
+class NavigationView extends View
+{
+  // ...
+  const TPL = <<<HTML
+<ul>
+  <li><a href="/"><h1>My Blog</h1></a></li>
+  <li><a href="/hello">Hello</a></li>
+  {{#user}}
+    <li><a href="/article/new">New article</a></li>
+  {{/user}}
+  <li>{{{login}}}</li>
+</ul>
+HTML;
+
+  public function render()
+  {
+    return [
+      'user' => Session::load()->has('user')
+    ];
+  }
+}
+
+```
+
+In Navigation we create an outlet called `login` and we check if there is a user in session to add New article link.
+
+Then we go to create a view who was rendered into `login` outlet.
+
+### Create LoginView
+
+> create Blog\Views\User\LoginView.php
+
+```php
+<?php
+namespace Blog\Views\User;
+
+use Tiimber\{View, Session};
+
+class LoginView extends View
+{
+  const EVENTS = [
+    'render::navigation' => 'login'
+  ];
+
+  const TPL = <<<HTML
+{{#user}}
+  <b>Hello {{username}}!</b>
+{{/user}}
+{{^user}}
+  <form method="post" action="/login">
+    <input type="text" name="username" placeholder="Username">
+    <button type="submit">Submit</button>
+  </form>
+{{/user}}
+HTML;
+
+  public function render()
+  {
+    return [
+      'user' => Session::load()->has('user'),
+      'username' => Session::load()->get('user')
+    ];
+  }
+}
+```
+
+This view listen the event `render::navigation`
+
+### Create LoginAction
+
+Like the article, we go to create an action to save our user in session.
+
+> in config/routes.json
+
+```json
+{
+  // ...
+  "user::auth": {
+    "route": "/login"
+  },
+  // ...
+}
+
+```
+
+
+> create Blog/Actions/Users/AuthAction.php
+
+```php
+<?php
+namespace Blog\Actions\User;
+
+use Tiimber\{Action, Session, Traits\RedirectTrait};
+
+class AuthAction extends Action
+{
+  use RedirectTrait;
+
+  const EVENTS = [
+    'request::user::auth'
+  ];
+  
+  
+  public function onPost($request, $args)
+  {
+    Session::load()->set('user', $request->post->get('username'));
+    $this->redirect('/');
+  }
+}
+```
+
+Then we gonna upgrade our previous views
+
+> in Blog/Actions/Articles/SaveAction.php
+
+```php
+<?php
+// ...
+use Tiimber\{Action, Session, Traits\RedirectTrait};
+// ...
+class SaveAction extends Action
+{
+  // ...
+  
+  public function onPost($request, $args)
+  {
+    // ...
+    $article->author = Session::load()->-get('user');
+
+    $id = R::store($this->article);
+    $this->redirect('/'.$id);
+  }
+
+}
+
+```
+
+> create Blog/Views/Articles/ShowView.php
+
+```php
+<?php
+namespace Blog\Views\Articles;
+
+use Tiimber\View;
+
+use RedBeanPHP\R;
+
+class ShowView extends View
+{
+  // ...
+  const TPL = <<<HTML
+<h2>{{article.title}}</h2>
+<p>{{article.content}}</p>
+<p>Created by {{article.author}}</p>
+HTML;
+  // ...
+}
+
+```
+
+You can now enjoy your little tiimber App.
