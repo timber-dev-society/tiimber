@@ -7,6 +7,7 @@
   - [Render errors](#render-errors)
   - [Dynamize your views](#dynamize-your-views)
   - [Views and Actions](#views-and-actions)
+  - [Sub rendering](#sub-rendering)
 
 # Tiimber
 
