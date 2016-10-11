@@ -162,7 +162,7 @@ php index.php
 
 And try it in your navigator by calling the URL http://localhost:1337/hello .
 
-## Templating a Layout :
+## Templating a Layout
 
 Currently our layout is pretty simple then we need to upgrade it to create more outlets. We want to add a navigation and a footer to our Layout.
 
@@ -296,7 +296,7 @@ php index.php
 
 And if you go to http://localhost:1337/ , you have to see your navigation and footer.
 
-## Render errors :
+## Render errors
 
 Currently we haven't define a home page, then when we go to http://localhost:1337/ we need to an error 404 not Found.
 
@@ -326,7 +326,7 @@ Now if you restart your server and go to the home page, you have to see the erro
 You can create a server error to who listen `error::500` event.
 
 
-## Dynamize your views :
+## Dynamize your views
 
 Your tiimber view can be more dynamic, the goal of this tuto is to create a simple blog, then we need to the capacity to create and read posts.
 
@@ -500,7 +500,7 @@ With that id we can load our article.
 But we stilln't have article in our database then we need a way to contribute it
 
 
-## Views and Actions :
+## Views and Actions
 
 ### Form creation :
 
