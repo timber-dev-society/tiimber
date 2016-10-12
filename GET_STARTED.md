@@ -597,11 +597,7 @@ Then for that we need a new route and view.
 <?php
 namespace Blog\Views\Articles;
 
-use Tiimber\View;
-
-use RedBeanPHP\R;
-
-class ManageView extends View
+class ManageView extends ShowView
 {
 
   const EVENTS = [
@@ -616,18 +612,6 @@ class ManageView extends View
   <p><button type="submit">Submit</button></p>
 </form>
 HTML;
-
-  private $article;
-
-  public function onGet($request, $args)
-  {
-    $this->article = R::load('article', (integer)$args['id']);
-  }
-
-  public function render()
-  {
-    return ['article' => $this->article];
-  }
 }
 
 ```
@@ -643,7 +627,7 @@ class ShowView extends View
   const TPL = <<<HTML
 <h2>{{article.title}}</h2>
 <p>{{article.content}}</p>
-<p><a href="{{article.id}}">edit</a></p>
+<p><a href="/article/{{article.id}}">edit</a></p>
 HTML;
   // ...
 }
@@ -781,7 +765,7 @@ class LoginView extends View
 
   const TPL = <<<HTML
 {{#user}}
-  <b>Hello {{username}}!</b>
+  <b>Hello {{user}}!</b>
 {{/user}}
 {{^user}}
   <form method="post" action="/login">
@@ -794,8 +778,7 @@ HTML;
   public function render()
   {
     return [
-      'user' => Session::load()->has('user'),
-      'username' => Session::load()->get('user')
+      'user' => Session::load()->get('user')
     ];
   }
 }
@@ -888,11 +871,21 @@ class ShowView extends View
   const TPL = <<<HTML
 <h2>{{article.title}}</h2>
 <p>{{article.content}}</p>
+{{#user}}
+  <p><a href="/article/{{article.id}}">edit</a></p>
+{{/user}}
 {{#article.author}}
   <p>Created by {{article.author}}</p>
 {{/article.author}}
 HTML;
   // ...
+  public function render()
+  {
+    return [
+      'article' => $this->article,
+      'user' => Session::load()->has('user')
+    ];
+  }
 }
 
 ```
