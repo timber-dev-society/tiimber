@@ -300,7 +300,7 @@ And if you go to http://localhost:1337/ , you have to see your navigation and fo
 
 ## Render errors
 
-Currently we haven't define a home page, then when we go to http://localhost:1337/ we need to an error 404 not Found.
+Currently we haven't define a home page, then when we go to http://localhost:1337/ we need an error 404 not Found.
 
 For that we need to create a new view.
 
@@ -365,7 +365,7 @@ You can create a server error to who listen `error::500` event.
 
 ## Use logger
 
-You implemented some views and some errors, but certainly want see what happen in Tiimber. For that you can use a logger. Currently there is two types of logger FileLogger and SysLogger. In our case we gonna use SysLogger.
+You have implemented some views and some errors, but certainly want see what happen in Tiimber. For that you need to use a logger. Currently there is two types of logger in Tiimber : FileLogger and SysLogger. In our case we gonna use SysLogger.
 
 > in Blog\Application.php
 
@@ -390,7 +390,7 @@ Thats all.
 
 Now if you restart your server, you certainly show lot of line when you call a page from your navigator.
 
-You can implement your own if you want, just take a quick look of FileLogger or SysLogger.
+You can implement your own logger if you want, for that, just take a quick look of FileLogger or SysLogger.
 
 
 ## Dynamize your views
@@ -846,7 +846,7 @@ class AuthAction extends Action
 }
 ```
 
-Then we gonna upgrade our previous views
+Then we gonna upgrade our previous views and actions
 
 > in Blog/Actions/Articles/SaveAction.php
 
