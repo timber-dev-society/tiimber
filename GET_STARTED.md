@@ -610,11 +610,11 @@ class ManageView extends View
 
   const TPL = <<<HTML
 <form method="post">
-    <input type="hidden" name="id" value="{{article.id}}">
-    <p><input type="text" name="title" placeholder="Title" value="{{article.title}}"></p>
-    <p><textarea name="content">{{article.content}}</textarea></p>
-    <p><button type="submit">Submit</button></p>
-  </form>
+  <input type="hidden" name="id" value="{{article.id}}">
+  <p><input type="text" name="title" placeholder="Title" value="{{article.title}}"></p>
+  <p><textarea name="content">{{article.content}}</textarea></p>
+  <p><button type="submit">Submit</button></p>
+</form>
 HTML;
 
   private $article;
