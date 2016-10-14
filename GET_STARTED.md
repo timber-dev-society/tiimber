@@ -466,6 +466,8 @@ namespace Blog\Views\Articles;
 
 use Tiimber\View;
 
+use RedBeanPHP\R;
+
 class IndexView extends View
 {
   const EVENTS = [
