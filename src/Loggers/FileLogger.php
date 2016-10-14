@@ -6,6 +6,7 @@ use Tiimber\{Memory, Traits\FolderResolverTrait};
 
 use const Tiimber\Consts\LogLevel\DEBUG;
 use const Tiimber\Consts\Folder\DS;
+use const Tiimber\Consts\Events\LOG;
 
 class FileLogger extends AbstractLogger
 {
@@ -17,7 +18,7 @@ class FileLogger extends AbstractLogger
   {
     $this->dest = $det;
     $this->setBaseLevel($level);
-    Memory::events()->on('log', function (string $level, string $message) {
+    Memory::events()->on(LOG, function (string $level, string $message) {
       if ($this->isLoggable($level)) {
         $this->log($message);
       }

@@ -5,6 +5,7 @@ namespace Tiimber\Loggers;
 use Tiimber\Memory;
 
 use const Tiimber\Consts\LogLevel\DEBUG;
+use const Tiimber\Consts\Events\LOG;
 
 class SysLogger extends AbstractLogger
 {
@@ -15,7 +16,7 @@ class SysLogger extends AbstractLogger
   public function __construct($level = DEBUG, int $message_type = 0, string $destination = null, string $extra_headers = null)
   {
     $this->setBaseLevel($level);
-    Memory::events()->on('log', function (string $level, string $message) use ($message_type, $destination, $extra_headers) {
+    Memory::events()->on(LOG, function (string $level, string $message) use ($message_type, $destination, $extra_headers) {
       if ($this->isLoggable($level)) {
         error_log($message, $message_type, $destination, $extra_headers);
       }

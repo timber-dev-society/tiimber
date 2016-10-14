@@ -7,3 +7,5 @@ const ERROR = 'error';
 const REQUEST = 'request';
 
 const RENDER = 'render';
+
+const LOG = 'log';
