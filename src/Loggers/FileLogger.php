@@ -4,32 +4,42 @@ namespace Tiimber\Loggers;
 
 use Tiimber\{Memory, Traits\FolderResolverTrait};
 
-class FileLogger
+use const Tiimber\Consts\LogLevel\DEBUG;
+use const Tiimber\Consts\Folder\DS;
+
+class FileLogger extends AbstractLogger
 {
   use FolderResolverTrait;
+  
+  private $dest;
 
-  public function __construct($level = 0)
+  public function __construct($level = DEBUG, $dest = 'tiimber.log')
   {
+    $this->dest = $det;
+    $this->setBaseLevel($level);
     Memory::events()->on('log', function (string $level, string $message) {
-      $this->log();
+      if ($this->isLoggable($level)) {
+        $this->log($message);
+      }
     });
   }
   
-  private function getLogFolder()
+  private function getLogFile()
   {
-    if (!is_dir($this->getBaseDir() . '/log')) {
-      mkdir($this->getBaseDir() . '/log');
+    $filename = $this->getBaseDir() . DS . 'log' . DS . $this->dest;
+    if (!is_dir($this->getBaseDir() . DS .'log')) {
+      mkdir($this->getBaseDir() . DS .'log');
     }
-    if (!file_exists($this->getBaseDir() . '/log/tiimber.log')) {
-      touch($this->getBaseDir() . '/log/tiimber.log');
+    if (!file_exists($filename)) {
+      touch($filename);
     }
 
-    return $this->getBaseDir() . '/log/tiimber.log';
+    return $filename;
   }
 
-  private function log($level, $message)
+  private function log($message)
   {
-    $filepath = $this->getLogFolder();
+    $filepath = $this->getLogFile();
     file_put_contents($filepath, $message . PHP_EOL, FILE_APPEND);
   }
 }
