@@ -12,7 +12,7 @@ use Tiimber\{Config, Dispatcher, Memory, Renderer, Traits\LoggerTrait, Http\Requ
 
 use const Tiimber\Consts\Scopes\{HTTP, LAYOUT};
 use const Tiimber\Consts\Http\{PORT, HOST, CODE, HEADER, DEFAULT_HEADERS};
-use const Tiimber\Consts\Events\{ERROR, RENDER, REQUEST, STOP, END, ON, DATA};
+use const Tiimber\Consts\Events\{ERROR, RENDER, REQUEST, STOP, END, ON, DATA, ES};
 use const Tiimber\Consts\LogLevel\{INFO, ERROR as LOG_ERROR};
 
 trait ServerTrait
@@ -83,9 +83,10 @@ trait ServerTrait
   private function emitRequest($request, $response)
   {
     $render = new Renderer();
+    $route = REQUEST;
     try {
       $match = $this->resolve($this->routes, $request->getMethod(), $request->getPath());
-
+      $route .= $match['_route'];
       $this->dispatcher->emit(REQUEST, strtolower($match['_route']), $render, [
         'request' => $request,
         'args' => $match
@@ -107,7 +108,31 @@ trait ServerTrait
     }
 
     $layout = Memory::get(LAYOUT)->get('\\Blog\\Layouts\\DefaultLayout');
-    Memory::events()->emit(END, ['content' => $render->render($layout)]);
+    Memory::events()->emit(END, ['content' => $render->render($this->resolveLayout($route))]);
+  }
+  
+  public function resolveLayout($route)
+  {
+    $pieces = explode($route, ES);
+    $layouts = [];
+    $default;
+    foreach (Memory::get(LAYOUT) as $namespace => $layout) {
+      if (strpos('Default', $namespace) !== -1) {
+        $default = $layout;
+      }
+      if (!defined($namespace . '::EVENTS')) continue;
+      foreach ($layout::EVENTS as $event) {
+        $common = array_intersect($pieces, explode($event, ES));
+        if (count($common) > 1) {
+          $layouts[count($common)] = $layout;
+        }
+      }
+    }
+    if (count($layouts) !== 0) {
+      ksort($layouts);
+      return end($layouts);
+    }
+    return $default;
   }
   
   public function setHost(string $host)
