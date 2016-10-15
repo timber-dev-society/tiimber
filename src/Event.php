@@ -7,7 +7,7 @@ use Evenement\EventEmitterTrait;
 use Tiimber\{Action, View, Renderer, Memory, Interfaces\DispatcherInterface, Traits\LoggerTrait};
 
 use const Tiimber\Consts\Scopes\{ACTION, VIEW};
-use const Tiimber\Consts\Events\{ERROR, RENDER, REQUEST};
+use const Tiimber\Consts\Events\{ERROR, RENDER, REQUEST, ON, STOP, ES, WILDCARD};
 use const Tiimber\Consts\LogLevel\{INFO};
 
 class Event
@@ -25,10 +25,10 @@ class Event
   public function __construct($scope)
   {
     $this->scope = $scope;
-    Memory::events()->on('on::request', function () {
+    Memory::events()->on(ON, function () {
       $this->isLocked = false;
     });
-    Memory::events()->on('stop::rendering', function () {
+    Memory::events()->on(STOP, function () {
       $this->eventAction = false;
       $this->isLocked = true;
     });
@@ -77,10 +77,10 @@ class Event
   {
     $pieces = explode('\\', $namespace);
     $pieces = array_slice($pieces, 3);
-    $event = strtolower(implode('::', $pieces));
+    $event = strtolower(implode(ES, $pieces));
 
     $this->dispatcher->emit(
-      'render', 
+      RENDER, 
       str_replace('view', '', $event),
       $this->renderer,
       [
@@ -117,12 +117,12 @@ class Event
   private function getWildCards($event)
   {
     $wildcards = [$event];
-    $pieces = explode('::', $event);
+    $pieces = explode(ES, $event);
 
     for ($length = count($pieces); $length >= 2; --$length) {
       $key = $length - 1;
-      $pieces[$key] = '*';
-      $wildcards[] = implode('::', $pieces);
+      $pieces[$key] = WILDCARD;
+      $wildcards[] = implode(ES, $pieces);
       unset($pieces[$key]);
     }
 

@@ -31,6 +31,6 @@ abstract class AbstractLogger
   
   public function isLoggable($level)
   {
-    return isset(self::LEVELS[$level]) ? (self::LEVELS[$level] >= self::LEVELS[$this->Base]) : false;
+    return isset(self::LEVELS[$level]) ? (self::LEVELS[$level] >= self::LEVELS[$this->base]) : false;
   }
 }

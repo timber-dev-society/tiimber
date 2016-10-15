@@ -5,7 +5,7 @@ namespace Tiimber;
 use Tiimber\{Action, View, Renderer, Memory, Event, Interfaces\DispatcherInterface};
 
 use const Tiimber\Consts\Scopes\{ACTION, VIEW};
-use const Tiimber\Consts\Events\{ERROR, RENDER, REQUEST};
+use const Tiimber\Consts\Events\{ERROR, RENDER, REQUEST, ES};
 
 class Dispatcher
 {
@@ -21,7 +21,7 @@ class Dispatcher
       $this->events[$scope]->dispatch(
         $renderer,
         $this,
-        $scope . '::' . $event, 
+        $scope . ES . $event, 
         $parameters
       );
     });

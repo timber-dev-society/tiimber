@@ -9,3 +9,15 @@ const REQUEST = 'request';
 const RENDER = 'render';
 
 const LOG = 'log';
+
+const ES = '::';
+
+const STOP = 'stop' . ES . 'rendering';
+
+const END = 'responce' . ES . 'end';
+
+const ON = 'on' . ES . 'request';
+
+const DATA = 'data';
+
+const WILDCARD = '*';

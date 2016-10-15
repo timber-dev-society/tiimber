@@ -3,7 +3,6 @@
 namespace Tiimber\Traits;
 
 use React\EventLoop\Factory;
-use React\Promise\Promise;
 use React\Socket\Server as Socket;
 use React\Http\{Server as Http, Request, Response};
 
@@ -13,7 +12,7 @@ use Tiimber\{Config, Dispatcher, Memory, Renderer, Traits\LoggerTrait, Http\Requ
 
 use const Tiimber\Consts\Scopes\{HTTP, LAYOUT};
 use const Tiimber\Consts\Http\{PORT, HOST, CODE, HEADER, DEFAULT_HEADERS};
-use const Tiimber\Consts\Events\{ERROR, RENDER, REQUEST};
+use const Tiimber\Consts\Events\{ERROR, RENDER, REQUEST, STOP, END, ON, DATA};
 use const Tiimber\Consts\LogLevel\{INFO, ERROR as LOG_ERROR};
 
 trait ServerTrait
@@ -32,7 +31,7 @@ trait ServerTrait
     $loop = Factory::create();
     $socket = new Socket($loop);
     $http = new Http($socket);
-    $http->on('request', $callback);
+    $http->on(REQUEST, $callback);
     
     Memory::create(HTTP);
     $socket->listen(
@@ -40,7 +39,7 @@ trait ServerTrait
       Memory::get(HTTP)->get(HOST, '127.0.0.1')
     );
     
-    Memory::events()->on('stop::rendering', function () {
+    Memory::events()->on(STOP, function () {
       Memory::get(HTTP)->set(CODE, 200); 
       Memory::get(HTTP)->set(HEADER, DEFAULT_HEADERS);
     });
@@ -51,23 +50,23 @@ trait ServerTrait
   public function runApp(): callable
   {
     return function (Request $request, Response $response) {
-      Memory::events()->emit('on::request', []);
+      Memory::events()->emit(ON, []);
       try {
         $this->log(INFO, 'new ' . $request->getMethod() . ' request on ' . $request->getPath());
         
-        Memory::events()->once('response::end', function ($content) use ($response) {
+        Memory::events()->once(END, function ($content) use ($response) {
 
           $response->writeHead(
             Memory::get(HTTP)->get(CODE, 200), 
             Memory::get(HTTP)->get(HEADER, DEFAULT_HEADERS)
           );
-          Memory::events()->emit('stop::rendering', []);
+          Memory::events()->emit(STOP, []);
 
           $response->end($content);
         });
 
         if ($request->getMethod() === 'POST') {
-          $request->on('data', function ($data) use ($request, $response) {
+          $request->on(DATA, function ($data) use ($request, $response) {
             $tiRequest = new TiRequest($request, $data);
             $this->emitRequest($tiRequest, $response);
           });
@@ -87,20 +86,20 @@ trait ServerTrait
     try {
       $match = $this->resolve($this->routes, $request->getMethod(), $request->getPath());
 
-      $this->dispatcher->emit('request', strtolower($match['_route']), $render, [
+      $this->dispatcher->emit(REQUEST, strtolower($match['_route']), $render, [
         'request' => $request,
         'args' => $match
       ]);
     } catch (RouteNotFoundException $e) {
-       $this->dispatcher->emit('error', '404', $render, [
+       $this->dispatcher->emit(ERROR, '404', $render, [
         'request' => $request,
         'args' => []
       ]);
       Memory::get(HTTP)->set(CODE, 404);
     } catch (\Exception $e) {
-      $this->log('error', $e->getMessage());
-      $this->log('error', $e->getTraceAsString());
-      $this->dispatcher->emit('error', '500', $render, [
+      $this->log(LOG_ERROR, $e->getMessage());
+      $this->log(LOG_ERROR, $e->getTraceAsString());
+      $this->dispatcher->emit(ERROR, '500', $render, [
         'request' => $request,
         'args' => ['error' => $e]
       ]);
@@ -108,7 +107,7 @@ trait ServerTrait
     }
 
     $layout = Memory::get(LAYOUT)->get('\\Blog\\Layouts\\DefaultLayout');
-    Memory::events()->emit('response::end', ['content' => $render->render($layout)]);
+    Memory::events()->emit(END, ['content' => $render->render($layout)]);
   }
   
   public function setHost(string $host)
