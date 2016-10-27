@@ -32,18 +32,18 @@ trait ServerTrait
     $socket = new Socket($loop);
     $http = new Http($socket);
     $http->on(REQUEST, $callback);
-    
+
     Memory::create(HTTP);
     $socket->listen(
       Memory::get(HTTP)->get(PORT, '1337'),
       Memory::get(HTTP)->get(HOST, '127.0.0.1')
     );
-    
+
     Memory::events()->on(STOP, function () {
-      Memory::get(HTTP)->set(CODE, 200); 
+      Memory::get(HTTP)->set(CODE, 200);
       Memory::get(HTTP)->set(HEADER, DEFAULT_HEADERS);
     });
-    
+
     $loop->run();
   }
 
@@ -53,11 +53,11 @@ trait ServerTrait
       Memory::events()->emit(ON, []);
       try {
         $this->log(INFO, 'new ' . $request->getMethod() . ' request on ' . $request->getPath());
-        
+
         Memory::events()->once(END, function ($content) use ($response) {
 
           $response->writeHead(
-            Memory::get(HTTP)->get(CODE, 200), 
+            Memory::get(HTTP)->get(CODE, 200),
             Memory::get(HTTP)->get(HEADER, DEFAULT_HEADERS)
           );
           Memory::events()->emit(STOP, []);
@@ -79,11 +79,11 @@ trait ServerTrait
       }
     };
   }
-  
+
   private function emitRequest($request, $response)
   {
     $render = new Renderer();
-    $route = REQUEST;
+    $route = REQUEST . ES;
     try {
       $match = $this->resolve($this->routes, $request->getMethod(), $request->getPath());
       $route .= $match['_route'];
@@ -110,10 +110,10 @@ trait ServerTrait
     $layout = Memory::get(LAYOUT)->get('\\Blog\\Layouts\\DefaultLayout');
     Memory::events()->emit(END, ['content' => $render->render($this->resolveLayout($route))]);
   }
-  
+
   public function resolveLayout($route)
   {
-    $pieces = explode($route, ES);
+    $pieces = explode(ES, $route);
     $layouts = [];
     $default;
     foreach (Memory::get(LAYOUT) as $namespace => $layout) {
@@ -122,7 +122,7 @@ trait ServerTrait
       }
       if (!defined($namespace . '::EVENTS')) continue;
       foreach ($layout::EVENTS as $event) {
-        $common = array_intersect($pieces, explode($event, ES));
+        $common = array_intersect($pieces, explode(ES, $event));
         if (count($common) > 1) {
           $layouts[count($common)] = $layout;
         }
@@ -134,7 +134,7 @@ trait ServerTrait
     }
     return $default;
   }
-  
+
   public function setHost(string $host)
   {
     Memory::set(HTTP)->set(HOST, $host);
