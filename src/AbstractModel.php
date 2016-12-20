@@ -22,7 +22,10 @@ abstract class AbstractModel
 
   public function __get($property)
   {
-    if (!in_array($property, $this->private_properties)) {
+    if (
+      !in_array($property, $this->private_properties) &&
+      isset($this->properties->$property)
+    ) {
       return $this->properties->$property;
     }
   }

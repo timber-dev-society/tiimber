@@ -76,7 +76,8 @@ abstract class AbstractTable
 
   public function findOneBy(array $where)
   {
-    return reset($this->findBy($where));
+    $finded = $this->findBy($where);
+    return reset($finded);
   }
 
   public function findAll()
