@@ -2,25 +2,40 @@
 namespace Tiimber\Http;
 
 use Tiimber\ParameterBag;
-//@deprecated;
+use Tiimber\Http\Session;
+use Tiimber\Traits\LoggerTrait;
+
 class Request
 {
   private $request;
+
+  private $session;
   
   private $post;
 
-  public function __construct($request, $data)
+  private $tiimberid;
+
+  public function __construct($request, $tiimberid, $data = '')
   {
     $post = [];
     parse_str($data, $post);
     $this->post = new ParameterBag($post);
     $this->request = $request;
+    $this->tiimberid = $tiimberid;
+    $this->session = Session::load($this->tiimberid);
+  }
+
+  public function storeSession()
+  {
+    Session::store($this->tiimberid, $this->session);
   }
   
   public function __get($name)
   {
     if ($name === 'post') {
       return $this->post;
+    } elseif ($name === 'session') {
+      return $this->session;
     }
   }
   

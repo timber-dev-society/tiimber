@@ -47,13 +47,30 @@ trait ServerTrait
     $loop->run();
   }
 
+  private function getTiimberid($request, $response) {
+    $cookies = isset($request->getHeaders()['Cookie']) ? $request->getHeaders()['Cookie'] : '';
+    $cookies = explode('=', $cookies);
+    $parsed_cookies = [];
+    for ($i = 0; $i < count($cookies); $i = $i + 2) {
+      $parsed_cookies[$cookies[$i]] = $cookies[$i + 1]; 
+    }
+
+    if (!isset($parsed_cookies['tiimberid'])) {
+      $tiimberid = uniqid('tiim', true);
+      Memory::get(HTTP)->set(HEADER, array_merge(DEFAULT_HEADERS, ['Set-Cookie' => ['tiimberid=' . $tiimberid]]));
+    } else {
+      $tiimberid = $parsed_cookies['tiimberid'];
+    }
+    return $tiimberid;
+  }
+
   public function runApp(): callable
   {
     return function (Request $request, Response $response) {
       Memory::events()->emit(ON, []);
       try {
         $this->log(INFO, 'new ' . $request->getMethod() . ' request on ' . $request->getPath());
-
+  
         Memory::events()->once(END, function ($content) use ($response) {
 
           $response->writeHead(
@@ -65,13 +82,22 @@ trait ServerTrait
           $response->end($content);
         });
 
+        $tiimberid = $this->getTiimberid($request, $response);
+
         if ($request->getMethod() === 'POST') {
-          $request->on(DATA, function ($data) use ($request, $response) {
-            $tiRequest = new TiRequest($request, $data);
+          $request->on(DATA, function ($data) use ($request, $response, $tiimberid) {
+            $tiRequest = new TiRequest($request, $tiimberid, $data);
+            Memory::events()->once(END, function ($content) use ($tiRequest) {
+              $tiRequest->storeSession();
+            });
             $this->emitRequest($tiRequest, $response);
           });
         } else {
-          $this->emitRequest($request, $response);
+          $tiRequest = new TiRequest($request, $tiimberid);
+          Memory::events()->once(END, function ($content) use ($tiRequest) {
+            $tiRequest->storeSession();
+          });
+          $this->emitRequest($tiRequest, $response);
         }
       } catch (\Exception $e) {
         $this->log(LOG_ERROR, $e->getMessage());

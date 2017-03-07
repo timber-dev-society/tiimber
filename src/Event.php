@@ -99,6 +99,9 @@ class Event
             $this->log(INFO, $namespace . ' intersept ' . $event);
             $this->propageRenderEvent($namespace, $request, $args);
             $this->executeAction($view, $request, $args);
+            if (method_exists($view, 'onCall')) {
+              $view->onCall($request, $args);
+            }
             $this->renderer->outlet($outlet, $view);
           }
         });
