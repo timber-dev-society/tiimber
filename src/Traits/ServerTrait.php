@@ -102,10 +102,6 @@ trait ServerTrait
       } catch (\Throwable $e) {
         $this->log(LOG_ERROR, $e->getMessage());
         $this->log(LOG_ERROR, 'Trace : ' . PHP_EOL . $e->getTraceAsString());
-        $this->dispatcher->emit(ERROR, '500', $render, [
-          'request' => $tiRequest,
-          'args' => []
-        ]);
       } catch (\Exception $e) {
         $this->log(LOG_ERROR, $e->getMessage());
         $this->log(LOG_ERROR, 'Trace : ' . PHP_EOL . $e->getTraceAsString());
