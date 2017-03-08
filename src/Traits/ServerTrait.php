@@ -99,6 +99,9 @@ trait ServerTrait
           });
           $this->emitRequest($tiRequest, $response);
         }
+      } catch (\Throwable $e) {
+        $this->log(LOG_ERROR, $e->getMessage());
+        $this->log(LOG_ERROR, 'Trace : ' . PHP_EOL . $e->getTraceAsString());
       } catch (\Exception $e) {
         $this->log(LOG_ERROR, $e->getMessage());
         $this->log(LOG_ERROR, 'Trace : ' . PHP_EOL . $e->getTraceAsString());
@@ -123,6 +126,14 @@ trait ServerTrait
         'args' => []
       ]);
       Memory::get(HTTP)->set(CODE, 404);
+    } catch (\Throwable $e) {
+      $this->log(LOG_ERROR, $e->getMessage());
+      $this->log(LOG_ERROR, $e->getTraceAsString());
+      $this->dispatcher->emit(ERROR, '500', $render, [
+        'request' => $request,
+        'args' => ['error' => $e]
+      ]);
+      Memory::get(HTTP)->set(CODE, 500);
     } catch (\Exception $e) {
       $this->log(LOG_ERROR, $e->getMessage());
       $this->log(LOG_ERROR, $e->getTraceAsString());
