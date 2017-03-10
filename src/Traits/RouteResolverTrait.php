@@ -2,17 +2,14 @@
 
 namespace Tiimber\Traits;
 
-use Tiimber\ParameterBag;
+use Tiimber\ImmutableBag;
 
-use Symfony\Component\Routing\Matcher\UrlMatcher;
-use Symfony\Component\Routing\RequestContext;
-use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\{Route, RouteCollection, RequestContext, Matcher\UrlMatcher};
 
 trait RouteResolverTrait
 {
 
-  public function resolve(ParameterBag $routes, $method, $url)
+  public function resolve(ImmutableBag $routes, $method, $url)
   {
     $routesCollection = $this->generateRouteCollection($routes);
     $context = new RequestContext('/', $method);
@@ -20,7 +17,7 @@ trait RouteResolverTrait
     return (new UrlMatcher($routesCollection, $context))->match($url);
   }
 
-  private function generateRouteCollection(ParameterBag $routes): RouteCollection
+  private function generateRouteCollection(ImmutableBag $routes): RouteCollection
   {
     $routeCollection = new RouteCollection();
 

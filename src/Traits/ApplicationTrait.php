@@ -12,12 +12,9 @@ use const Tiimber\Consts\Scopes\FOLDER;
 
 use React\Promise\Promise;
 
-use Tiimber\Traits\RouteResolverTrait;
 
 trait ApplicationTrait
 {
-  use RouteResolverTrait;
-
   public function chop()
   {
     $explodedClass = explode('\\', self::class);

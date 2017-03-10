@@ -2,7 +2,7 @@
 namespace Tiimber;
 
 use Tiimber\Exception;
-use Tiimber\ParameterBag;
+use Tiimber\ImmutableBag;
 use Tiimber\Traits\FolderResolverTrait;
 
 class Config
@@ -48,7 +48,7 @@ class Config
   {
     $files = glob($this->getConfigdir() . '*.json');
     foreach($files as $file) {
-      $this->config[basename($file, '.json')] = new ParameterBag($this->readJsonFile($file));
+      $this->config[basename($file, '.json')] = new ImmutableBag($this->readJsonFile($file));
     }
   }
 
@@ -65,7 +65,7 @@ class Config
       foreach($files as $file) {
         $content = array_merge($content, (array)$this->readJsonFile($file));
       }
-      $this->config[basename($folder)] = new ParameterBag($content);
+      $this->config[basename($folder)] = new ImmutableBag($content);
     }
   }
 }

@@ -2,9 +2,12 @@
 
 namespace Tiimber;
 
+use RuntimeException;
+
 use Evenement\EventEmitterTrait;
 
-use Tiimber\{Action, View, Renderer, Memory, Interfaces\DispatcherInterface, Traits\LoggerTrait};
+use Tiimber\{Action, View, Renderer, Memory, Traits\LoggerTrait};
+use Tiimber\Interfaces\{DispatcherInterface, EventInterface, RenderableInterface};
 
 use const Tiimber\Consts\Scopes\{ACTION, VIEW};
 use const Tiimber\Consts\Events\{ERROR, RENDER, REQUEST, ON, STOP, ES, WILDCARD};
@@ -15,8 +18,6 @@ class Event
   use EventEmitterTrait, LoggerTrait;
 
   private $renderer;
-
-  private $eventAction;
   
   private $isLocked;
   
@@ -34,21 +35,41 @@ class Event
     });
   }
 
-  public function dispatch(Renderer $renderer, $dispatcher, string $event, array $parameters)
+  public function dispatch(Renderer $renderer, $dispatcher, string $event, array $parameters): Renderer
   {
     $this->renderer = $renderer;
     $this->dispatcher = $dispatcher;
     foreach ($this->getWildCards($event) as $event) {
       $this->emit($event, $parameters);
     }
+    return $renderer;
+  }
+
+  private function checkActionInterface($action, $namespace)
+  {
+    if (!$action instanceof EventInterface) {
+      throw new RuntimeException(get_class($action) . ' must implement \\Tiimber\\Interfaces\\EventInterface');
+    }
+  }
+
+  private function checkViewInterface($view, $namespace)
+  {
+    $this->checkActionInterface($view, $namespace);
+
+    if (!$view instanceof RenderableInterface) {
+      throw new RuntimeException($namespace . ' must implement \\Tiimber\\Interfaces\\RenderableInterface');
+    }
   }
   
   public function attachEvents()
   {
     foreach (Memory::get(ACTION) as $namespace => $action) {
+      $this->checkActionInterface($action, $namespace);
       $this->attachActionEvents($action, $namespace);
     }
+
     foreach (Memory::get(VIEW) as $namespace => $view) {
+      $this->checkViewInterface($view, $namespace);
       $this->attachViewEvents($view, $namespace);
     }
   }
@@ -65,9 +86,7 @@ class Event
         $this->on($event, function ($request, $args) use ($action, $event, $namespace) {
           $this->log('info', $namespace . ' intersept ' . $event);
           $this->executeAction($action, $request, $args);
-          if (method_exists($action, 'call')) {
-            $action->call($request, $args);
-          }
+          $action->onCall($request, $args);
         });
       }
     }
@@ -97,24 +116,15 @@ class Event
         $this->on($event, function ($request, $args) use ($view, $outlet, $namespace, $event) {
           if (!$this->isLocked) {
             $this->log(INFO, $namespace . ' intersept ' . $event);
+
             $this->propageRenderEvent($namespace, $request, $args);
             $this->executeAction($view, $request, $args);
-            if (method_exists($view, 'onCall')) {
-              $view->onCall($request, $args);
-            }
+            $view->onCall($request, $args);
             $this->renderer->outlet($outlet, $view);
           }
         });
       }
     }
-  }
-
-  private function getEventAction($request)
-  {
-    if (!$this->eventAction) {
-      $this->eventAction = 'on' . ucfirst(strtolower($request->getMethod()));
-    }
-    return $this->eventAction;
   }
 
   private function getWildCards($event)
@@ -134,10 +144,6 @@ class Event
 
   private function executeAction(Action $action, $request, $args)
   {
-    $event = $this->getEventAction($request);
-    if (method_exists($action, $event)) {
-      $this->log(INFO, $event . ' method called');
-      $action->{$event}($request, $args);
-    }
+    $action->{'on' . ucfirst(strtolower($request->getMethod()))}($request, $args);
   }
 }

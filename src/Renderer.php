@@ -32,4 +32,9 @@ class Renderer
       $this->outlets
     );
   }
+
+  public function refresh()
+  {
+    $this->outlets = [];
+  }
 }

@@ -1,7 +1,7 @@
 <?php
 namespace Tiimber\Http;
 
-use Tiimber\{Memory, ParameterBag};
+use Tiimber\{Memory, ParameterBag, Http\Cookie};
 use const Tiimber\Consts\Events\END;
 use Tiimber\Traits\LoggerTrait;
 
@@ -9,13 +9,40 @@ class Session
 {
   use LoggerTrait;
 
-  private static $instance;
+  private $tiimberid;
 
-  private function __construct()
+  private $session;
+
+  private $bag;
+
+  public function __construct(Cookie $cookie)
   {
-    if (isset($_SESSION)) {
+    if (!isset($_SESSION)) {
       session_start();
+    } else {
+      $this->session = $_SESSION;
     }
+    $this->tiimberid = $this->loadTiimberid($cookie);
+    $this->bag = $this->load();
+  }
+
+  /**
+   * Load current tiimberid
+   *
+   * @param $cookie Cookie
+   * @return string
+   */
+  private function loadTiimberid(Cookie $cookie): string
+  {
+    if (!$cookie->has('tiimberid')) {
+      $tiimberid = uniqid('tiim', true);
+    } else {
+      $tiimberid = $cookie->get('tiimberid');
+    }
+    $cookie->add('tiimberid', $tiimberid, time() + 3600);
+    $this->info('tiimberid: ' . $tiimberid);
+
+    return $tiimberid;
   }
 
   /**
@@ -23,19 +50,13 @@ class Session
    *
    * @return Session
    */
-  public static function load(string $key): ParameterBag
+  private function load(): ParameterBag
   {
-    if (!self::$instance) {
-      self::$instance = new self();
-    }
-    self::$instance->info($key);
-    if (self::$instance->has($key)) {
-      self::$instance->info(self::$instance->get($key));
-      return unserialize(self::$instance->get($key));
+    if (isset($this->session[$this->tiimberid])) {
+      return unserialize($this->session[$this->tiimberid]);
     } else {
       return new ParameterBag();
     }
-    
   }
 
   /**
@@ -44,11 +65,20 @@ class Session
    * @param String $key
    * @param mixed $value
    */
-  public static function store($key, $value)
+  public function store()
   {
-    self::$instance->info(serialize($key));
-    self::$instance->info(serialize($value));
-    $_SESSION[$key] = serialize($value);
+    $this->session[$this->tiimberid] = serialize($this->bag);
+  }
+
+  /**
+   * Destruct current session
+   *
+   * @param $key
+   */
+  public function destruct()
+  {
+    $this->bag = new ParameterBag();
+    $this->store();
   }
 
   /**
@@ -58,10 +88,9 @@ class Session
    * @param mixed $default
    * @return mixed
    */
-  private function get(string $key, $default = null)
+  public function get(string $key, $default = null)
   {
-    $this->info(session_id());
-    return $_SESSION[$key] ?? $default;
+    return $this->bag->get($key, $default);
   }
 
   /**
@@ -70,9 +99,9 @@ class Session
    * @param String $key
    * @return mixed
    */
-  private function has(string $key)
+  public function has(string $key): bool
   {
-    return isset($_SESSION[$key]);
+    return $this->bag->has($key);
   }
 
   /**
@@ -81,22 +110,18 @@ class Session
    * @param String $key
    * @param mixed $value
    */
-  private function set(string $key, $value): Session
+  public function set(string $key, $value)
   {
-    $_SESSION[$key] = $value;
-
-    return $this;
+    $this->bag->set($key, $value);
   }
 
   /**
-   * Remove a stored value in session
+   * Untore a value in session
    *
-   * @param $key
+   * @param String $key
    */
-  private function destruct(string $key): Session
+  public function unset(string $key)
   {
-    unset($_SESSION[$key]);
-
-    return $this;
+    $this->bag->unset($key);
   }
 }

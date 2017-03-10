@@ -4,8 +4,9 @@ namespace Tiimber;
 use Tiimber\Action;
 
 use Tiimber\Exceptions\ViewException;
+use Tiimber\Interfaces\RenderableInterface;
 
-abstract class View extends Action
+abstract class View extends Action implements RenderableInterface
 {
   /**
    * unserialize all parameters and return a ParameterBag
@@ -28,7 +29,7 @@ abstract class View extends Action
     return self::TPL;
   }
   
-  public function render()
+  public function render(): array
   {
     return [];
   }
