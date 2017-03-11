@@ -15,9 +15,6 @@ class Session
 
   public function __construct(Cookie $cookie)
   {
-    if (!isset($_SESSION)) {
-      session_start();
-    }
     $this->tiimberid = $this->loadTiimberid($cookie);
     $this->bag = $this->load();
   }

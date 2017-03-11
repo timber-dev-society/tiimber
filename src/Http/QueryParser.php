@@ -9,7 +9,9 @@ class QueryParser {
     $parsed = [];
     foreach ($prameters as $parameter) {
       $parameter = explode('=', $parameter);
-      $parsed[$parameter[0]] = $parameter[1]; 
+      if (count($parameter) > 1) {
+        $parsed[$parameter[0]] = $parameter[1]; 
+      }
     }
     return $parsed;
   }
