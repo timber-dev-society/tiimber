@@ -360,7 +360,45 @@ class FooterView extends View
 
 Now if you restart your server and go to the home page, you have to see the error.
 
-You can create a server error to who listen `error::500` event.
+For server error you can do something like this, (but use it only for development) :
+
+> create Blog\Views\Errors\ServerErrorView.php
+
+```php
+<?php
+
+namespace Blog\Views\Errors;
+
+use Tiimber\View;
+use Tiimber\Http\{Request, Response};
+
+class ServerErrorView extends View
+{
+  const EVENTS = [
+    'error::500' => 'content'
+  ];
+  
+  const TPL = <<<EOF
+<div>{{message}}</div>
+<pre>{{stack}}</pre>
+EOF;
+
+  private $error;
+  
+  public function onCall(Request $req, Response $res)
+  {
+    $this->error = $req->getArgs()->get('error');
+  }
+  
+  public function render(): array
+  {
+    return [
+      'message' => $this->error->getMessage(),
+      'stack' => $this->error->getTraceAsString()
+    ];
+  }
+}
+```
 
 
 ## Use logger
@@ -492,7 +530,7 @@ class IndexView extends View
 {{/articles}}
 HTML;
 
-  public function render()
+  public function render(): array
   {
     $articles = R::findAll('article','ORDER BY id DESC LIMIT 10');
     return ['articles' => array_values($articles)];
@@ -532,6 +570,7 @@ Our article route need to be dynamic for that pass dynamical params by defining 
 namespace Blog\Views\Articles;
 
 use Tiimber\View;
+use Tiimber\Http\{Request, Response};
 
 use RedBeanPHP\R;
 
@@ -549,12 +588,12 @@ HTML;
 
   private $article;
 
-  public function onGet($request, $args)
+  public function onGet(Request $req, Response $res)
   {
-    $this->article = R::load('article', (integer)$args['id']);
+    $this->article = R::load('article', (integer)$req->getArgs()->get('id'));
   }
 
-  public function render()
+  public function render(): array
   {
     return ['article' => $this->article];
   }
@@ -667,7 +706,8 @@ In this case we go to use an Action to save our article.
 <?php
 namespace Blog\Actions\Articles;
 
-use Tiimber\{Action, Traits\RedirectTrait};
+use Tiimber\Action;
+use Tiimber\Http\{Request, Response};
 
 use RedBeanPHP\R;
 
@@ -688,15 +728,15 @@ class SaveAction extends Action
     }
   }
   
-  public function onPost($request, $args)
+  public function onPost(Request $req, Response $res)
   {
-    $article = $this->prepare($args['id']);
+    $article = $this->prepare($req->getArgs()->get('id'));
 
-    $article->title = $request->post->get('title');
-    $article->content = $request->post->get('content');
+    $article->title = $req->getPost->get('title');
+    $article->content = $req->getPost->get('content');
 
     $id = R::store($this->article);
-    $this->redirect('/'.$id);
+    $res->redirect('/'.$id);
   }
 
 }
@@ -719,7 +759,8 @@ To finish our app we go to create a quick identification based on php sessions. 
 ```php
 <?php
 // ...
-use Tiimber\{View, Session};
+use Tiimber\View;
+use Tiimber\Http\{Request, Response};
 
 class NavigationView extends View
 {
@@ -735,10 +776,17 @@ class NavigationView extends View
 </ul>
 HTML;
 
-  public function render()
+  $this->logged= false;
+
+  public function onCall(Request $req, Response $res)
+  {
+    $this->logged = $req->getSession()->has('user');
+  }
+
+  public function render(): array
   {
     return [
-      'user' => Session::load()->has('user')
+      'user' => $this->logged
     ];
   }
 }
@@ -757,7 +805,8 @@ Then we go to create a view who was rendered into `login` outlet.
 <?php
 namespace Blog\Views\User;
 
-use Tiimber\{View, Session};
+use Tiimber\View;
+use Tiimber\Http\{Request, Response};
 
 class LoginView extends View
 {
@@ -777,10 +826,17 @@ class LoginView extends View
 {{/user}}
 HTML;
 
-  public function render()
+  private $user;
+
+  public function onCall(Request $res, Response $res)
+  {
+    $this->user = $res->getSession()->get('user');
+  }
+
+  public function render(): array
   {
     return [
-      'user' => Session::load()->get('user')
+      'user' => $this->user
     ];
   }
 }
@@ -812,7 +868,8 @@ Like the article, we go to create an action to save our user in session.
 <?php
 namespace Blog\Actions\Users;
 
-use Tiimber\{Action, Session, Traits\RedirectTrait};
+use Tiimber\Action;
+use Tiimber\Http\{Request, Response};
 
 class AuthAction extends Action
 {
@@ -823,10 +880,10 @@ class AuthAction extends Action
   ];
   
   
-  public function onPost($request, $args)
+  public function onPost(Request $req, Response $res)
   {
-    Session::load()->set('user', $request->post->get('username'));
-    $this->redirect('/');
+    $req->getSession()->set('user', $req->getPost()->get('username'));
+    $res->redirect('/');
   }
 }
 ```
@@ -838,19 +895,20 @@ Then we gonna upgrade our previous views and actions
 ```php
 <?php
 // ...
-use Tiimber\{Action, Session, Traits\RedirectTrait};
+use Tiimber\Action;
+use Tiimber\Http\{Request, Response};
 // ...
 class SaveAction extends Action
 {
   // ...
   
-  public function onPost($request, $args)
+  public function onPost(Request $req, Response $res)
   {
     // ...
-    $article->author = Session::load()->get('user');
+    $article->author = $req->getSession()->get('user');
 
     $id = R::store($this->article);
-    $this->redirect('/'.$id);
+    $res->redirect('/'.$id);
   }
 
 }
@@ -864,6 +922,7 @@ class SaveAction extends Action
 namespace Blog\Views\Articles;
 
 use Tiimber\View;
+use Tiimber\Http\{Request, Response};
 
 use RedBeanPHP\R;
 
@@ -880,12 +939,22 @@ class ShowView extends View
   <p>Created by {{article.author}}</p>
 {{/article.author}}
 HTML;
-  // ...
-  public function render()
+
+  private $article;
+
+  private $logged;
+
+  public function onGet(Request $req, Response $res)
+  {
+    $this->article = R::load('article', (integer)$req->getArgs()->get('id'));
+    $this->logged = $req->getSession()->get('user');
+  }
+
+  public function render(): array
   {
     return [
       'article' => $this->article,
-      'user' => Session::load()->has('user')
+      'user' => $this->logged
     ];
   }
 }
