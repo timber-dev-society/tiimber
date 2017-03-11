@@ -1,17 +1,24 @@
 module.exports = function(grunt) {
 
+  var fileWatch = [
+    'src/*.php',
+    'src/**/*.php',
+    'tests/*.php',
+    'tests/**/*.php'
+  ]
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     watch: {
       php: {
-        files: ['**/*.php'],
+        files: fileWatch,
         tasks: ['phpunit'],
         options: {
           spawn: false,
         },
       },
       phpDocker: {
-        files: ['**/*.php'],
+        files: fileWatch,
         tasks: ['exec'],
         options: {
           spawn: false,
