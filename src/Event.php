@@ -7,7 +7,7 @@ use RuntimeException;
 use Evenement\EventEmitterTrait;
 
 use Tiimber\{Action, View, Renderer, Memory, Traits\LoggerTrait};
-use Tiimber\Interfaces\{DispatcherInterface, EventInterface, RenderableInterface};
+use Tiimber\Interfaces\{DispatcherInterface, ActionInterface, RenderableInterface};
 
 use const Tiimber\Consts\Scopes\{ACTION, VIEW};
 use const Tiimber\Consts\Events\{ERROR, RENDER, REQUEST, ON, STOP, ES, WILDCARD};
@@ -47,8 +47,8 @@ class Event
 
   private function checkActionInterface($action, $namespace)
   {
-    if (!$action instanceof EventInterface) {
-      throw new RuntimeException(get_class($action) . ' must implement \\Tiimber\\Interfaces\\EventInterface');
+    if (!$action instanceof ActionInterface) {
+      throw new RuntimeException($namespace . ' must implement \\Tiimber\\Interfaces\\ActionInterface');
     }
   }
 

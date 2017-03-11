@@ -15,6 +15,8 @@ class Request
   
   private $post;
 
+  private $args;
+
   private $locked = false;
 
   public function __construct(ReactRequest $request, Session $session, Cookie $cookie)
@@ -27,12 +29,20 @@ class Request
   public function setData(array $data): Request
   {
     if (!$this->locked) {
-      $this->post = new ImmutableBag($post);
+      $this->post = new ImmutableBag($data);
+    }
+    return $this;
+  }
+
+  public function setArgs(array $args): Request
+  {
+    if (!$this->locked) {
+      $this->args = new ImmutableBag($args);
     }
     return $this->lock();
   }
 
-  public function lock(): Request
+  private function lock(): Request
   {
     $this->locked = true;
     return $this;
@@ -46,9 +56,36 @@ class Request
       return $this->session;
     } elseif ($name === 'cookie') {
       return $this->cookie;
+    } elseif ($name === 'args') {
+      return $this->args;
     } else {
       return $this->request->{ucfirst($name)}();
     }
+  }
+
+  public function clone($args)
+  {
+    $request = new self($this->request, $this->session, $this->cookie);
+    if ($this->post !== null) {
+      $request->setData($this->post->toArray());
+    }
+    if ($this->args instanceof ImmutableBag) {
+      $request->setArgs(array_merge($this->args->toArray(), $args));
+    } else {
+      $request->setArgs($args);
+    }
+      
+    return $request;
+  }
+
+  public function getPost(): ImmutableBag
+  {
+    return $this->post;
+  }
+
+  public function getArgs(): ImmutableBag
+  {
+    return $this->args;
   }
 
   public function getSession(): Session

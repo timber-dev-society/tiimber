@@ -8,8 +8,8 @@ use React\Http\{Server as Http, Request as ReactRequest, Response as ReactRespon
 
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
-use Tiimber\{Config, Dispatcher, Memory, Renderer};
-use Tiimber\Http\{Request, Response, Cookie, Session};
+use Tiimber\{Config, Dispatcher, Memory, Renderer, Renderer\Layout};
+use Tiimber\Http\{Request, Response, Cookie, Session, QueryParser};
 use Tiimber\Traits\{RouteResolverTrait, LoggerTrait};
 
 use const Tiimber\Consts\Scopes\{HTTP, LAYOUT};
@@ -22,7 +22,7 @@ trait ServerTrait
   use LoggerTrait;
   use RouteResolverTrait;
 
-  private $request;
+  private $layout;
 
   private $routes;
 
@@ -30,6 +30,7 @@ trait ServerTrait
   {
     $this->dispatcher = new Dispatcher();
     $this->routes = Config::get('routes', []);
+    $this->layout = new Layout($this->routes);
 
     $loop = Factory::create();
     $socket = new Socket($loop);
@@ -44,89 +45,87 @@ trait ServerTrait
     $loop->run();
   }
 
+  private function initApp(ReactRequest $rRequest, ReactResponse $rResponse)
+  {
+    $cookie = new Cookie($rRequest, $rResponse);
+    $response = new Response($rResponse, $cookie);
+    $session = new Session($cookie);
+    $request = new Request($rRequest, $session, $cookie);
+
+    Memory::events()->once(END, function ($content) use ($response, $session) {
+      $session->store();
+      $response->end($content);
+    });
+
+    return [$request, $response];
+  }
+
   public function runApp(): callable
   {
     return function (ReactRequest $rRequest, ReactResponse $rResponse) {
+      
       Memory::events()->emit(ON, []);
-
-      $cookie = new Cookie($rRequest, $rResponse);
-      $response = new Response($rResponse, $cookie);
-      $session = new Session($cookie);
-      $request = new Request($rRequest, $session, $cookie);
+      list($request, $response) = $this->initApp($rRequest, $rResponse);
 
       try {
         $this->log(INFO, 'new ' . $request->getMethod() . ' request on ' . $request->getPath());
-  
-        Memory::events()->once(END, function ($content) use ($response, $session) {
-          $response->end($content);
-          $session->store();
-        });
 
-        if ($request->getMethod() === 'POST') {
-          $request->on(DATA, function ($data) use ($request, $response, $session) {
-            $request->addData($data);
-            $this->emitRequest($request, $response);
+        if ($rRequest->getMethod() === 'POST') {
+          $rRequest->on(DATA, function ($data) use ($request, $response) {
+            $this->emitRequest($request->setData(QueryParser::parse($data)), $response);
           });
         } else {
           $this->emitRequest($request, $response);
         }
 
       } catch (\Throwable $e) {
-        $this->log(LOG_ERROR, $e->getMessage());
-        $this->log(LOG_ERROR, 'Trace : ' . PHP_EOL . $e->getTraceAsString());
+        return $this->emitError($e, 500, $request, $response);
       } catch (\Exception $e) {
-        $this->log(LOG_ERROR, $e->getMessage());
-        $this->log(LOG_ERROR, 'Trace : ' . PHP_EOL . $e->getTraceAsString());
+        return $this->emitError($e, 500, $request, $response);
       }
     };
   }
 
-  private function emitRequest($request, $response)
+  private function emitError($error, int $code, Request $request, Response $response)
   {
-    $render = new Renderer();
-    $route = '';
-    try {
-      $match = $this->resolve($this->routes, $request->getMethod(), $request->getPath());
-      $route = strtolower($match['_route']);
-
-      $this->dispatcher->emit(REQUEST, $route, $render, [
-        'request' => $request,
-        'args' => $match
-      ]);
-
-    } catch (RouteNotFoundException $e) {
-       $this->dispatcher->emit(ERROR, '404', $render, [
-        'request' => $request,
-        'args' => []
-      ]);
-      Memory::get(HTTP)->set(CODE, 404);
-
-    } catch (\Throwable $e) {
-      $render->refresh();
-      $this->log(LOG_ERROR, $e->getMessage());
-      $this->log(LOG_ERROR, $e->getTraceAsString());
-      $this->dispatcher->emit(ERROR, '500', $render, [
-        'request' => $request,
-        'args' => ['error' => $e]
-      ]);
-      Memory::get(HTTP)->set(CODE, 500);
-
-    } catch (\Exception $e) {
-      $render->refresh();
-      $this->log(LOG_ERROR, $e->getMessage());
-      $this->log(LOG_ERROR, $e->getTraceAsString());
-      $this->dispatcher->emit(ERROR, '500', $render, [
-        'request' => $request,
-        'args' => ['error' => $e]
-      ]);
-      Memory::get(HTTP)->set(CODE, 500);
+    if (!$error instanceof RouteNotFoundException) {
+      $this->log(LOG_ERROR, $error->getMessage());
+      $this->log(LOG_ERROR, $error->getTraceAsString());
     }
 
-    $layout = Memory::get(LAYOUT)->get('\\Blog\\Layouts\\DefaultLayout');
-    Memory::events()->emit(END, ['content' => $render->render($this->resolveLayout(REQUEST . ES . $route))]);
+    $render = new Renderer();
+    $request = $request->clone(['error' => $error]);
+
+    $this->dispatcher->emit(ERROR, $code, $render, [
+      'req' => $request,
+      'res' => $response
+    ]);
+    Memory::events()->emit(END, ['content' => $render->render($this->layout->resolveErrorLayout(ERROR . ES . $code))]);
   }
 
-  public function resolveLayout($route)
+  private function emitRequest($request, $response)
+  {
+    try {
+      $render = new Renderer();
+
+      $match = $this->resolve($this->routes, $request->getMethod(), $request->getPath());
+      $route = strtolower($match['_route']);
+      unset($match['_route']);
+      $request->setArgs($match);
+
+      $this->dispatcher->emit(REQUEST, $route, $render, [
+        'req' => $request,
+        'res' => $response
+      ]);
+
+      Memory::events()->emit(END, ['content' => $render->render($this->layout->resolve(REQUEST . ES . $route))]);
+
+    } catch (RouteNotFoundException $e) {
+      return $this->emitError($e, 404, $request, $response);
+    }
+  }
+
+  private function resolveLayout($route)
   {
     $pieces = explode(ES, $route);
     $layouts = [];

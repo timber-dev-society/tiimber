@@ -5,8 +5,10 @@ namespace Tiimber\Http;
 
 use DateTime;
 
-use Tiimber\ImmutableBag;
 use React\Http\{Request, Response};
+
+use Tiimber\ImmutableBag;
+use Tiimber\Http\QueryParser;
 
 class Cookie extends ImmutableBag
 {
@@ -14,14 +16,7 @@ class Cookie extends ImmutableBag
 
   private function parseCookies(Request $request): array
   {
-    $cookies = $request->getHeaders()['Cookie'] ?? '';
-    $cookies = explode('; ', $cookies);
-    $parsed = [];
-    foreach ($cookies as $cookie) {
-      $cookie = explode('=', $cookie);
-      $parsed[$cookie[0]] = $cookie[1]; 
-    }
-    return $parsed;
+    return QueryParser::parse($request->getHeaders()['Cookie'] ?? '');
   }
 
   public function __construct(Request $request, Response $response)

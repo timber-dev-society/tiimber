@@ -5,10 +5,10 @@ namespace Tiimber;
 use Serializable;
 
 use Tiimber\Exceptions\ActionException;
-use Tiimber\Interfaces\EventInterface;
-use Tiimber\Http\Request;
+use Tiimber\Interfaces\ActionInterface;
+use Tiimber\Http\{Request, Response};
 
-abstract class Action implements Serializable, EventInterface
+abstract class Action implements Serializable, ActionInterface
 {
   /**
    * Serialize all parameters
@@ -31,17 +31,17 @@ abstract class Action implements Serializable, EventInterface
     return $this;
   }
 
-  public function onGet(Request $request, array $args)
+  public function onGet(Request $req, Response $res)
   {
     return;
   }
 
-  public function onPost(Request $request, array $args)
+  public function onPost(Request $req, Response $res)
   {
     return;
   }
 
-  public function onCall(Request $request, array $args)
+  public function onCall(Request $req, Response $res)
   {
     return;
   }

@@ -11,16 +11,12 @@ class Session
 
   private $tiimberid;
 
-  private $session;
-
   private $bag;
 
   public function __construct(Cookie $cookie)
   {
     if (!isset($_SESSION)) {
       session_start();
-    } else {
-      $this->session = $_SESSION;
     }
     $this->tiimberid = $this->loadTiimberid($cookie);
     $this->bag = $this->load();
@@ -52,8 +48,8 @@ class Session
    */
   private function load(): ParameterBag
   {
-    if (isset($this->session[$this->tiimberid])) {
-      return unserialize($this->session[$this->tiimberid]);
+    if (isset($_SESSION[$this->tiimberid])) {
+      return unserialize($_SESSION[$this->tiimberid]);
     } else {
       return new ParameterBag();
     }
@@ -67,7 +63,7 @@ class Session
    */
   public function store()
   {
-    $this->session[$this->tiimberid] = serialize($this->bag);
+    $_SESSION[$this->tiimberid] = serialize($this->bag);
   }
 
   /**

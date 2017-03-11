@@ -46,4 +46,9 @@ class ImmutableBag implements IteratorAggregate
   {
     return new ArrayIterator($this->properties);
   }
+
+  public function toArray(): array
+  {
+    return (array)$this->properties;
+  }
 }
