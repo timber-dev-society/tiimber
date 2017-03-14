@@ -1,9 +1,9 @@
 <?php
 namespace Tiimber\Tests;
 
-use Tiimber\Application;
-use Tiimber\Config;
-use Tiimber\ParameterBag;
+use Tiimber\{Config, ImmutableBag, Memory};
+
+use const Tiimber\Consts\{Scopes\FOLDER, Folder\CONFIG};
 
 use PHPUnit_Framework_TestCase;
 
@@ -13,8 +13,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 {
   public function __construct()
   {
-    $application = new Application();
-    $application->setConfigDir(__DIR__ . '/Config/');
+    Memory::set(FOLDER)->set(CONFIG, __DIR__ . '/Config/');
   }
 
   public function testLoadConfigFiles()
@@ -29,7 +28,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     $values = Config::get('routes');
     $count = 0;
     foreach ($values as $key => $value) {
-      $this->assertTrue(in_array($key, ['basic_route', 'route_with_param', 'route_with_protocol']));
+      $this->assertTrue(in_array($key, ['basic', 'with::param', 'with::protocol']));
       $this->assertTrue($value instanceof stdClass);
       $count++;
     }

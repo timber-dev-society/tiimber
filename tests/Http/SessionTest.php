@@ -1,25 +1,16 @@
 <?php
 namespace Tiimber\Tests\Http;
 
-use Tiimber\Http\{Cookie, Session};
-use React\Http\{Request, Response};
-use RingCentral\Psr7\Request as Psr;
+use Tiimber\Http\Session;
 
 use PHPUnit_Framework_TestCase;
 
 class SessionTest extends PHPUnit_Framework_TestCase
 {
-  public $cookie;
-
   public function __construct()
   {
     $conn = $this->getMockBuilder('React\Socket\ConnectionInterface')->getMock();
-
-    $this->cookie = new Cookie(
-      new Request('GET', '/', [], '1.1', ['Cookie' => 'tiimberid=12']), 
-      new Response($conn)
-    );
-    $this->session = new Session($this->cookie);
+    $this->session = new Session('12');
   }
 
   public function testSet()
@@ -36,7 +27,7 @@ class SessionTest extends PHPUnit_Framework_TestCase
     $this->assertEquals('baz', $this->session->get('new'));
     $this->session->store();
 
-    $session = new Session($this->cookie);
+    $session = new Session('12');
     $this->assertEquals('baz', $session->get('new'));
     $this->assertTrue($session->get('baz', true));
     $this->assertNull($session->get('baz'));
