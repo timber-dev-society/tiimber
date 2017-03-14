@@ -9,33 +9,14 @@ class Session
 {
   use LoggerTrait;
 
-  private $tiimberid;
+  private $sessid;
 
   private $bag;
 
-  public function __construct(Cookie $cookie)
+  public function __construct(string $sessid)
   {
-    $this->tiimberid = $this->loadTiimberid($cookie);
+    $this->sessid = $sessid;
     $this->bag = $this->load();
-  }
-
-  /**
-   * Load current tiimberid
-   *
-   * @param $cookie Cookie
-   * @return string
-   */
-  private function loadTiimberid(Cookie $cookie): string
-  {
-    if (!$cookie->has('tiimberid')) {
-      $tiimberid = uniqid('tiim', true);
-    } else {
-      $tiimberid = $cookie->get('tiimberid');
-    }
-    $cookie->add('tiimberid', $tiimberid, time() + 3600);
-    $this->info('tiimberid: ' . $tiimberid);
-
-    return $tiimberid;
   }
 
   /**
@@ -45,8 +26,8 @@ class Session
    */
   private function load(): ParameterBag
   {
-    if (isset($_SESSION[$this->tiimberid])) {
-      return unserialize($_SESSION[$this->tiimberid]);
+    if (isset($_SESSION[$this->sessid])) {
+      return unserialize($_SESSION[$this->sessid]);
     } else {
       return new ParameterBag();
     }
@@ -60,7 +41,7 @@ class Session
    */
   public function store()
   {
-    $_SESSION[$this->tiimberid] = serialize($this->bag);
+    $_SESSION[$this->sessid] = serialize($this->bag);
   }
 
   /**

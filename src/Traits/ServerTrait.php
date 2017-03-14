@@ -49,8 +49,10 @@ trait ServerTrait
   {
     $cookie = new Cookie($rRequest, $rResponse);
     $response = new Response($rResponse, $cookie);
-    $session = new Session($cookie);
-    $request = new Request($rRequest, $session, $cookie);
+    $session = new Session($this->getSessid($cookie));
+    $request = new Request([
+      $rRequest
+    ], $session, $cookie);
 
     Memory::events()->once(END, function ($content) use ($response, $session) {
       $session->store();
@@ -58,6 +60,25 @@ trait ServerTrait
     });
 
     return [$request, $response];
+  }
+
+  /**
+   * get current sessid
+   *
+   * @param $cookie Cookie
+   * @return string
+   */
+  private function getSessid(Cookie $cookie): string
+  {
+    if (!$cookie->has('sessid')) {
+      $sessid = uniqid('tiim', true);
+    } else {
+      $sessid = $cookie->get('sessid');
+    }
+    $cookie->add('sessid', $sessid, time() + 3600);
+    $this->info('sessid: ' . $sessid);
+
+    return $sessid;
   }
 
   public function runApp(): callable

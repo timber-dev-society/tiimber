@@ -1,9 +1,9 @@
 <?php
 namespace Tiimber\Tests;
 
-use Tiimber\{Memory, Config, ImmutableBag};
-
-use const Tiimber\Consts\{Folder\CONFIG, Scopes\FOLDER};
+use Tiimber\Application;
+use Tiimber\Config;
+use Tiimber\ParameterBag;
 
 use PHPUnit_Framework_TestCase;
 
@@ -13,7 +13,8 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 {
   public function __construct()
   {
-    Memory::set(FOLDER)->set(CONFIG, __DIR__ . '/Config/');
+    $application = new Application();
+    $application->setConfigDir(__DIR__ . '/Config/');
   }
 
   public function testLoadConfigFiles()
