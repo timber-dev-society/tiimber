@@ -5,8 +5,10 @@ namespace Tiimber;
 use Serializable;
 
 use Tiimber\Exceptions\ActionException;
+use Tiimber\Interfaces\ActionInterface;
+use Tiimber\Http\{Request, Response};
 
-abstract class Action implements Serializable
+abstract class Action implements Serializable, ActionInterface
 {
   /**
    * Serialize all parameters
@@ -27,6 +29,21 @@ abstract class Action implements Serializable
   public function unserialize($serialized): Action
   {
     return $this;
+  }
+
+  public function onGet(Request $req, Response $res)
+  {
+    return;
+  }
+
+  public function onPost(Request $req, Response $res)
+  {
+    return;
+  }
+
+  public function onCall(Request $req, Response $res)
+  {
+    return;
   }
   
   public function raise(int $code, string $message = null)

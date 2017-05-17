@@ -12,34 +12,34 @@ use const Tiimber\Consts\Scopes\FOLDER;
 
 use React\Promise\Promise;
 
-use Tiimber\Traits\RouteResolverTrait;
 
 trait ApplicationTrait
 {
-  use RouteResolverTrait;
-
-  public function chop()
+  public function chop(string $app = null)
   {
-    $explodedClass = explode('\\', self::class);
-    (new Loader(reset($explodedClass)));
+    if ($app === null) {
+      $explodedClass = explode('\\', self::class);
+      $app = reset($explodedClass);
+    }
+    (new Loader($app));
   }
 
-  public function setRoot($dir)
+  public function setRoot(string $dir)
   {
     Memory::set(FOLDER)->set(BASE, $dir);
   }
 
-  public function setConfigDir($dir)
+  public function setConfigDir(string $dir)
   {
     Memory::set(FOLDER)->set(CONFIG, $dir);
   }
 
-  public function setResourceDir($dir)
+  public function setResourceDir(string $dir)
   {
     Memory::set(FOLDER)->set(RESOURCE, $dir);
   }
 
-  public function setCacheFolder($dir)
+  public function setCacheFolder(string $dir)
   {
     Memory::set(FOLDER)->set(CACHE, $dir);
   }

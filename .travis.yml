@@ -12,7 +12,7 @@ before_script:
   - composer install --no-interaction --prefer-source
 
 script:
-  - ./vendor/bin/phpunit ./tests/
+  - ./vendor/bin/phpunit ./tests/ --bootstrap ./tests/bootstrap.php
 
 notifications:
     email: false

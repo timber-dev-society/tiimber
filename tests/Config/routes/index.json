@@ -1,5 +1,5 @@
 {
-  "route_with_param": {
+  "with::param": {
     "route": "/{id}",
     "controller": "Index",
     "action": "routeWithParam",
@@ -7,7 +7,7 @@
       "id": "\\d+"
     }
   },
-  "basic_route": {
+  "basic": {
     "route": "/",
     "controller": "Index",
     "action": "index"

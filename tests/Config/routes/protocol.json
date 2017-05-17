@@ -1,5 +1,5 @@
 {
-  "route_with_protocol": {
+  "with::protocol": {
     "route": "get::/foo",
     "controller": "Index",
     "action": "index"
