@@ -2,7 +2,7 @@
 namespace Tiimber\Utilities;
 
 use Tiimber\Config;
-use Tiimber\ParameterBag;
+use Tiimber\Bags\ImmutableBag;
 
 class Text
 {
@@ -17,7 +17,7 @@ class Text
     return password_hash(
       $password,
       PASSWORD_BCRYPT,
-      ['salt' => Config::get('security', new ParameterBag())->get('salt', null)]
+      ['salt' => Config::get('security', new Bags\ImmutableBag())->get('salt', null)]
     );
   }
 }

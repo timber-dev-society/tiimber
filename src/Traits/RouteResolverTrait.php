@@ -2,7 +2,7 @@
 
 namespace Tiimber\Traits;
 
-use Tiimber\ImmutableBag;
+use Tiimber\Bags\ImmutableBag;
 
 use Symfony\Component\Routing\{Route, RouteCollection, RequestContext, Matcher\UrlMatcher};
 

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Tiimber;
+namespace Tiimber\Bags;
 
 use ArrayIterator;
 use IteratorAggregate;

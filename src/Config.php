@@ -2,7 +2,7 @@
 namespace Tiimber;
 
 use Tiimber\Exception;
-use Tiimber\ImmutableBag;
+use Tiimber\Bags\ImmutableBag;
 use Tiimber\Traits\FolderResolverTrait;
 
 class Config

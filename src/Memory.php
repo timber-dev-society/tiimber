@@ -1,7 +1,7 @@
 <?php
 namespace Tiimber;
 
-use Tiimber\ParameterBag;
+use Tiimber\Bags\ParameterBag;
 use Tiimber\Memory\ProviderResolver;
 use Tiimber\Exceptions\Exception;
 

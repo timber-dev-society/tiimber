@@ -7,7 +7,7 @@ use DateTime;
 
 use React\Http\{Request, Response};
 
-use Tiimber\ImmutableBag;
+use Tiimber\Bags\ImmutableBag;
 use Tiimber\Http\QueryParser;
 
 class Cookie extends ImmutableBag

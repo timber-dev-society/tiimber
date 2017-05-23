@@ -1,7 +1,7 @@
 <?php
 namespace Tiimber\Http;
 
-use Tiimber\ImmutableBag;
+use Tiimber\Bags\ImmutableBag;
 use Tiimber\Http\{Cookie, Session};
 use React\Http\Request as ReactRequest;
 

@@ -1,7 +1,7 @@
 <?php
 namespace Tiimber\Http;
 
-use Tiimber\{Memory, ParameterBag, Http\Cookie};
+use Tiimber\{Memory, Bags\SerializableBag, Http\Cookie};
 use const Tiimber\Consts\Events\END;
 use Tiimber\Traits\LoggerTrait;
 
@@ -24,12 +24,12 @@ class Session
    *
    * @return Session
    */
-  private function load(): ParameterBag
+  private function load(): SerializableBag
   {
     if (isset($_SESSION[$this->sessid])) {
       return unserialize($_SESSION[$this->sessid]);
     } else {
-      return new ParameterBag();
+      return new SerializableBag();
     }
   }
 
@@ -51,7 +51,7 @@ class Session
    */
   public function destruct()
   {
-    $this->bag = new ParameterBag();
+    $this->bag = new SerializableBag();
     $this->store();
   }
 

@@ -9,7 +9,7 @@ use Tiimber\Interfaces\RenderableInterface;
 abstract class View extends Action implements RenderableInterface
 {
   /**
-   * unserialize all parameters and return a ParameterBag
+   * unserialize all parameters and return a View
    *
    * @param $data string
    * @return View

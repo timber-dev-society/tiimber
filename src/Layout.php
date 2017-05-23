@@ -16,7 +16,7 @@ abstract class Layout implements Serializable
   }
 
   /**
-   * unserialize all parameters and return a ParameterBag
+   * unserialize all parameters and return a View
    *
    * @param $data string
    * @return View

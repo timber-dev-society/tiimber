@@ -14,13 +14,7 @@ class ParameterBag implements IteratorAggregate, Serializable
   private $properties;
 
   public function __construct(array $properties = null)
-  {
-    if ($properties !== null) {
-      foreach($properties as $property) {
-        $this->checkProperty($property);
-      }
-    }
-    
+  { 
     $this->properties = is_null($properties) ? new stdClass() : (object)$properties;
   }
 
@@ -77,32 +71,8 @@ class ParameterBag implements IteratorAggregate, Serializable
     return new ArrayIterator($this->properties);
   }
 
-  /**
-   * Serialize all parameters
-   *
-   * return string
-   */
-  public function serialize(): string
+  protected function getProperties(): stdClass
   {
-    return json_encode($this->properties);
-  }
-
-  /**
-   * unserialize all parameters and return a ParameterBag
-   *
-   * @param $data string
-   * @return ParameterBag
-   */
-  public function unserialize($serialized): ParameterBag
-  {
-    $this->properties = json_decode($serialized);
-    return $this;
-  }
-
-  private function checkProperty($property)
-  {
-    if (is_object($property) && !$property instanceof Serializable) {
-      throw new Exception('To store ' . get_class($property) . 'in a ParameterBag, your object must be implementing Serializable interface.', 500);
-    }
+    return $this->properties;
   }
 }
