@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace Tiimber;
+namespace Tiimber\Bags;
 
 use ArrayIterator;
 use IteratorAggregate;
@@ -9,12 +9,12 @@ use stdClass;
 
 use Tiimber\Exception;
 
-class ParameterBag implements IteratorAggregate, Serializable
+class ParameterBag implements IteratorAggregate
 {
-  private $properties;
+  protected $properties;
 
-  public function __construct(array $properties = null)
-  { 
+  public function __construct($properties = null)
+  {
     $this->properties = is_null($properties) ? new stdClass() : (object)$properties;
   }
 
@@ -39,7 +39,6 @@ class ParameterBag implements IteratorAggregate, Serializable
    */
   public function set(string $key, $value): ParameterBag
   {
-    $this->checkProperty($value);
     $this->properties->{$key} = $value;
     return $this;
   }
@@ -69,10 +68,5 @@ class ParameterBag implements IteratorAggregate, Serializable
   public function getIterator(): ArrayIterator
   {
     return new ArrayIterator($this->properties);
-  }
-
-  protected function getProperties(): stdClass
-  {
-    return $this->properties;
   }
 }

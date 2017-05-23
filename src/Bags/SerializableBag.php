@@ -12,7 +12,7 @@ use Tiimber\Bags\ParameterBag;
 
 class SerializableBag extends ParameterBag implements IteratorAggregate, Serializable
 {
-  public function __construct(array $properties = null)
+  public function __construct($properties = null)
   {
     if ($properties !== null) {
       foreach($properties as $property) {
@@ -24,13 +24,27 @@ class SerializableBag extends ParameterBag implements IteratorAggregate, Seriali
   }
 
   /**
+   * Set object parameter
+   *
+   * @param $key String
+   * @param $value mixed
+   * @return ParameterBag
+   */
+  public function set(string $key, $value): ParameterBag
+  {
+    $this->checkProperty($value);
+    $this->properties->{$key} = $value;
+    return $this;
+  }
+
+  /**
    * Serialize all parameters
    *
    * return string
    */
   public function serialize(): string
   {
-    return json_encode($this->getProperties());
+    return json_encode($this->properties);
   }
 
   /**
@@ -42,7 +56,9 @@ class SerializableBag extends ParameterBag implements IteratorAggregate, Seriali
   public function unserialize($serialized): SerializableBag
   {
     $properties = json_decode($serialized);
-    return new self($properties);
+    $this->properties = is_null($properties) ? new stdClass() : (object)$properties;
+
+    return $this;
   }
 
   private function checkProperty($property)
