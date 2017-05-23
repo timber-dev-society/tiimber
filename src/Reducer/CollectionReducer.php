@@ -22,10 +22,13 @@ class CollectionReducer
 
   protected final function map($callback)
   {
-    $this->nextState = [];
-    foreach($this->state as $key => $value) {
-      $this->nextState[$key] = $callback($value, $key);
+    $state = [];
+    foreach ($this->state as $key => $value) {
+      $newValue = $callback($value, $key);
+      if ($newValue !== static::DELETE) {
+        $state[$key] = $newValue;
+      }
     }
-    return clone $this;
+    return $state;
   }
 }

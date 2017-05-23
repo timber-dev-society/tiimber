@@ -1,7 +1,7 @@
 <?php
 namespace Tiimber;
 
-use const Tiimber\Consts\Scopes\{LAYOUT, VIEW, HELPER, ACTION};
+use const Tiimber\Consts\Scopes\{LAYOUT, VIEW, HELPER, ACTION, PAGE};
 use const Tiimber\Consts\Folder\DS;
 
 use Tiimber\Traits\FolderResolverTrait;
@@ -12,10 +12,11 @@ class Loader
 
   public function __construct(string $namespace)
   {
-    $this->viewsLoading($namespace, $this->getBaseDir() . DS . $namespace);
+    //$this->viewsLoading($namespace, $this->getBaseDir() . DS . $namespace);
+    $this->pagesLoading($namespace, $this->getBaseDir() . DS . $namespace);
     $this->actionsLoading($namespace, $this->getBaseDir() . DS . $namespace);
     $this->helpersLoading($namespace, $this->getBaseDir() . DS . $namespace);
-    $this->layoutsLoading($namespace, $this->getBaseDir() . DS . $namespace);
+    //$this->layoutsLoading($namespace, $this->getBaseDir() . DS . $namespace);
   }
 
   private function loadFromDir(string $scope, string $folder, string $namespace)
@@ -36,48 +37,22 @@ class Loader
     }
   }
 
+  private function pagesLoading($namespace, $folder)
+  {
+    Memory::create(PAGE);
+    $this->load(PAGE, $namespace, $folder);
+  }
+
   private function viewsLoading($namespace, $folder)
   {
     Memory::create(VIEW);
-    if (is_dir($folder . DS . ucfirst(VIEW))) {
-      $this->loadFromDir(
-        VIEW,
-        $folder . DS . ucfirst(VIEW),
-        '\\' . $namespace . '\\' . ucfirst(VIEW) . '\\'
-      );
-      $this->getDir(
-        $folder . DS . ucfirst(VIEW),
-        function (string $dirname) use ($folder, $namespace) {
-          $this->loadFromDir(
-            VIEW,
-            $folder . DS . ucfirst(VIEW) . DS . $dirname,
-            '\\' . $namespace . '\\' . ucfirst(VIEW) . '\\' . $dirname . '\\'
-          );
-        }
-      );
-    }
+    $this->load(VIEW, $namespace, $folder);
   }
   
   private function actionsLoading($namespace, $folder)
   {
     Memory::create(ACTION);
-    if (is_dir($folder . DS . ucfirst(ACTION))) {
-      $this->loadFromDir(
-        ACTION,
-        $folder . DS . ucfirst(ACTION),
-        '\\' . $namespace . '\\' . ucfirst(ACTION) . '\\'
-      );
-      $this->getDir(
-        $folder . DS . ucfirst(ACTION),
-        function (string $dirname) use ($folder, $namespace) {
-          $this->loadFromDir(
-            ACTION,
-            $folder . DS . ucfirst(ACTION) . DS . $dirname,
-            '\\' . $namespace . '\\' . ucfirst(ACTION) . '\\' . $dirname . '\\'
-          );
-        }
-      );
-    }
+    $this->load(ACTION, $namespace, $folder);
   }
   
   private function helpersLoading($namespace, $folder)
@@ -99,6 +74,27 @@ class Loader
         LAYOUT,
         $folder . DS . ucfirst(LAYOUT),
         '\\' . $namespace . '\\' . ucfirst(LAYOUT) . '\\'
+      );
+    }
+  }
+
+  private function load($scope, $namespace, $folder)
+  {
+    if (is_dir($folder . DS . ucfirst($scope))) {
+      $this->loadFromDir(
+        $scope,
+        $folder . DS . ucfirst($scope),
+        '\\' . $namespace . '\\' . ucfirst($scope) . '\\'
+      );
+      $this->getDir(
+        $folder . DS . ucfirst($scope),
+        function (string $dirname) use ($scope, $folder, $namespace) {
+          $this->loadFromDir(
+            $scope,
+            $folder . DS . ucfirst(PAGE) . DS . $dirname,
+            '\\' . $namespace . '\\' . ucfirst($scope) . '\\' . $dirname . '\\'
+          );
+        }
       );
     }
   }

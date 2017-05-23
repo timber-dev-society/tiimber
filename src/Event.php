@@ -13,6 +13,8 @@ use const Tiimber\Consts\Scopes\{ACTION, VIEW};
 use const Tiimber\Consts\Events\{ERROR, RENDER, REQUEST, ON, STOP, ES, WILDCARD};
 use const Tiimber\Consts\LogLevel\{INFO};
 
+use Tiimber\Renderer\Includer;
+
 class Event
 {
   use EventEmitterTrait, LoggerTrait;
@@ -54,7 +56,7 @@ class Event
 
   private function checkViewInterface($view, $namespace)
   {
-    $this->checkActionInterface($view, $namespace);
+    //$this->checkActionInterface($view, $namespace);
 
     if (!$view instanceof RenderableInterface) {
       throw new RuntimeException($namespace . ' must implement \\Tiimber\\Interfaces\\RenderableInterface');
@@ -68,10 +70,10 @@ class Event
       $this->attachActionEvents($action, $namespace);
     }
 
-    foreach (Memory::get(VIEW) as $namespace => $view) {
+    /*foreach (Memory::get(VIEW) as $namespace => $view) {
       $this->checkViewInterface($view, $namespace);
       $this->attachViewEvents($view, $namespace);
-    }
+    }*/
   }
   
   public function accept(string $event): bool
@@ -109,18 +111,22 @@ class Event
     );
   }
 
-  private function attachViewEvents(view $view, $namespace)
+  private function attachViewEvents(View $view, $namespace)
   {
-    foreach ($view::EVENTS as $event => $outlet) {
+    foreach ($view::EVENTS as $event) {
       if (strpos($event, $this->scope) === 0) {
-        $this->on($event, function ($request, $args) use ($view, $outlet, $namespace, $event) {
+        $this->on($event, function ($request, $args) use ($view, $namespace, $event) {
           if (!$this->isLocked) {
             $this->log(INFO, $namespace . ' intersept ' . $event);
 
-            $this->propageRenderEvent($namespace, $request, $args);
+            $subrend = (new Includer())->parse($view::TPL);
+            var_dump($subrend);
+
+
+            /*$this->propageRenderEvent($namespace, $request, $args);
             $this->executeAction($view, $request, $args);
             $view->onCall($request, $args);
-            $this->renderer->outlet($outlet, $view);
+            $this->renderer->outlet($outlet, $view);*/
           }
         });
       }

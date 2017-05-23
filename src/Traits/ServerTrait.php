@@ -8,7 +8,7 @@ use React\Http\{Server as Http, Request as ReactRequest, Response as ReactRespon
 
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
-use Tiimber\{Config, Dispatcher, Memory, Renderer, Renderer\Layout};
+use Tiimber\{Config, Dispatcher, Memory, Renderer, Renderer\Pages};
 use Tiimber\Http\{Request, Response, Cookie, Session, QueryParser};
 use Tiimber\Traits\{RouteResolverTrait, LoggerTrait};
 
@@ -22,7 +22,7 @@ trait ServerTrait
   use LoggerTrait;
   use RouteResolverTrait;
 
-  private $layout;
+  private $pages;
 
   private $routes;
 
@@ -30,7 +30,7 @@ trait ServerTrait
   {
     $this->dispatcher = new Dispatcher();
     $this->routes = Config::get('routes', []);
-    $this->layout = new Layout($this->routes);
+    $this->pages = new Pages($this->routes);
 
     $loop = Factory::create();
     $socket = new Socket($loop);
@@ -119,7 +119,7 @@ trait ServerTrait
       'req' => $request,
       'res' => $response
     ]);
-    Memory::events()->emit(END, ['content' => $render->render($this->layout->resolveErrorLayout(ERROR . ES . $code))]);
+    Memory::events()->emit(END, ['content' => $render->render($this->pages->resolveErrorLayout(ERROR . ES . $code))]);
   }
 
   private function emitRequest($request, $response)
@@ -137,35 +137,11 @@ trait ServerTrait
         'res' => $response
       ]);
 
-      Memory::events()->emit(END, ['content' => $render->render($this->layout->resolve(REQUEST . ES . $route))]);
+      Memory::events()->emit(END, ['content' => $render->renderPage($this->pages->resolve(REQUEST . ES . $route))]);
 
     } catch (RouteNotFoundException $e) {
       return $this->emitError($e, 404, $request, $response);
     }
-  }
-
-  private function resolveLayout($route)
-  {
-    $pieces = explode(ES, $route);
-    $layouts = [];
-    $default;
-    foreach (Memory::get(LAYOUT) as $namespace => $layout) {
-      if (strpos('Default', $namespace) !== -1) {
-        $default = $layout;
-      }
-      if (!defined($namespace . '::EVENTS')) continue;
-      foreach ($layout::EVENTS as $event) {
-        $common = array_intersect($pieces, explode(ES, $event));
-        if (count($common) > 1) {
-          $layouts[count($common)] = $layout;
-        }
-      }
-    }
-    if (count($layouts) !== 0) {
-      ksort($layouts);
-      return end($layouts);
-    }
-    return $default;
   }
 
   public function setHost(string $host)

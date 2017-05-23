@@ -12,3 +12,5 @@ const LAYOUT = 'layouts';
 const FOLDER = 'folders';
 
 const HELPER = 'helpers';
+
+const PAGE = 'pages';

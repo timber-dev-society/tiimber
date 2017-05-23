@@ -6,27 +6,16 @@ use Tiimber\Action;
 use Tiimber\Exceptions\ViewException;
 use Tiimber\Interfaces\RenderableInterface;
 
-abstract class View extends Action implements RenderableInterface
+abstract class View implements RenderableInterface
 {
-  /**
-   * unserialize all parameters and return a View
-   *
-   * @param $data string
-   * @return View
-   */
-  public function unserialize($serialized): View
-  {
-    return $this;
-  }
-
   public function raise(int $code, string $message = null)
   {
     throw new ViewException($message, $code);
   }
 
-  public function __toString()
+  public function stateToProps($state, $props): array
   {
-    return self::TPL;
+    return [];
   }
   
   public function render(): array
