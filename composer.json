@@ -12,7 +12,10 @@
         "psr-4": {
             "Tiimber\\Tests\\": "tests/",
             "Tiimber\\": "src/"
-        }
+        },
+        "files": [
+            "src/consts/includes.php"
+        ]
     },
     "require": {
         "psr/log": "^1.0",

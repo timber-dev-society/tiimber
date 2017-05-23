@@ -50,9 +50,7 @@ trait ServerTrait
     $cookie = new Cookie($rRequest, $rResponse);
     $response = new Response($rResponse, $cookie);
     $session = new Session($this->getSessid($cookie));
-    $request = new Request([
-      $rRequest
-    ], $session, $cookie);
+    $request = new Request($rRequest, $session, $cookie);
 
     Memory::events()->once(END, function ($content) use ($response, $session) {
       $session->store();
