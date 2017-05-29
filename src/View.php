@@ -6,20 +6,20 @@ use Tiimber\Action;
 use Tiimber\Exceptions\ViewException;
 use Tiimber\Interfaces\RenderableInterface;
 
-abstract class View implements RenderableInterface
+abstract class View
 {
   public function raise(int $code, string $message = null)
   {
     throw new ViewException($message, $code);
   }
 
-  public function stateToProps($state, $props): array
+  public function propsToState(array $props, array $ownProps): array
   {
-    return [];
+    return $ownProps;
   }
   
-  public function render(): array
+  public function render(array $state): array
   {
-    return [];
+    return $state;
   }
 }

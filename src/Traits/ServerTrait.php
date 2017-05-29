@@ -21,6 +21,8 @@ trait ServerTrait
 {
   use LoggerTrait;
   use RouteResolverTrait;
+  
+  private static $start;
 
   private $pages;
 
@@ -55,6 +57,7 @@ trait ServerTrait
     Memory::events()->once(END, function ($content) use ($response, $session) {
       $session->store();
       $response->end($content);
+      $this->info('Response delivred in ' . round((microtime(true) - self::$start) * 1000, 2) . 'ms');
     });
 
     return [$request, $response];
@@ -83,6 +86,7 @@ trait ServerTrait
   {
     return function (ReactRequest $rRequest, ReactResponse $rResponse) {
       
+      self::$start = microtime(true);
       Memory::events()->emit(ON, []);
       list($request, $response) = $this->initApp($rRequest, $rResponse);
 

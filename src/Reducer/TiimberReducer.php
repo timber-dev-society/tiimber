@@ -1,23 +1,27 @@
 <?php
 namespace Tiimber\Reducer;
 
-use Tiimber\{Reducer\CollectionReducer, Renderer};
-use const Tiimber\Consts\Action\RENDER;
+use const Tiimber\Consts\Actions\RENDER;
 
-class TiimberReducer extends CollectionReducer
+$chunk = function (?array $state, array $action)
 {
-  public $defaultState = [];
-
-  public function onAction($state, $action)
-  {
-    switch ($action['type']) {
-      case RENDER:
-        return array_merge(
-          $state,
-          [$action['outlet'] => $action['render']->renderChunk($action['tpl'])]
-        );
-      default:
-        return state;
-    }
+  switch ($action['type']) {
+    case RENDER:
+      return $action['render']->renderChunk($action['view'], $action['props']);
+    default:
+      return $state;
   }
-}
+};
+
+$render = function ($state = [], $action) use ($chunk)
+{
+  switch ($action['type']) {
+    case RENDER:
+      return array_merge(
+        $state,
+        [$action['outlet'] => $chunk(null, $action)]
+      );
+    default:
+      return $state;
+  }
+};

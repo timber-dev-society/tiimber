@@ -1,10 +1,11 @@
 <?php
-
 namespace Tiimber;
 
-use Tiimber\Memory;
+use Rb\Redux\Store;
 
-use Tiimber\Renderer\{Engine, Includer};
+use Tiimber\{Memory, Renderer\Engine, Renderer\Includer};
+use const Tiimber\Consts\Actions\RENDER;
+use function Tiimber\Renderer\Parser\{convertParams, generateTpl};
 
 class Renderer
 {
@@ -12,19 +13,78 @@ class Renderer
 
   private $dispatch;
   
-  public function __construct($store)
+  public function __construct()
   {
-    Memory::events()->on('stop::rendering', function () {
-      $this->outlets = [];
-    });
-    $this->store = $store;
+    include __DIR__ . DIRECTORY_SEPARATOR . 'Reducer'. DIRECTORY_SEPARATOR . 'TiimberReducer.php';
+    $this->store = Store::create($render, []);
   }
 
-  public function outlet($name, $view)
+  public function parseChunk(string $tpl): array
   {
-    $this->outlets[$name] = Engine::get()->render(
-      $view::TPL, 
-      array_merge($view->render(), $this->outlets)
+    $regex = '/\<([A-Z]\w+)\s((?:\w+=(?:\"|\{)?.+(?:\"|\})?\s)*)?\/\>/U';
+
+    $matches = [];
+    preg_match_all($regex, $tpl, $matches);
+    return $matches;
+  }
+
+  public function paramsToProps(array $params, array $values): ?array
+  {
+    if (empty($params[0])) return [];
+    $props = [];
+    foreach ($params as $param) {
+      $args = explode('=', $param);
+      $value = json_decode($args[1]);
+      $props[$args[0]] = ($value !== null 
+        ? $value 
+        : ($values[str_replace(['{', '}'], '', $args[1])] ?? null)
+      );
+    }
+    return $props;
+  }
+
+  protected function convertChunks($view)
+  {
+    $matches = $this->parseChunk($view::TPL);
+
+    // $replace = [];
+    // $outlets = [];
+    // foreach ($matches[1] as $key => $match) {
+    //   $name = 'tiimber-' . $match . '-' . uniqid();
+    //   $replace[] = '{{{' . $name . '}}}';
+    //   $action = $view->{$match}();
+    //   $params = explode(' ', trim($matches[2][$key]));
+    //   $this->store->dispatch(array_merge(
+    //     $action,
+    //     [
+    //       'type' => RENDER,
+    //       'outlet' => $name,
+    //       'render' => $this,
+    //       'props' => convertParams(0, explode(' ', trim($matches[2][$key])), $view->render([]), []),
+    //     ]
+    //   ));
+    // }
+    // return str_replace($matches[0], $replace, $view::TPL);
+    return generateTpl(0, $matches, $view, $view::TPL, function ($action, $outlet, $props) {
+      $this->store->dispatch(array_merge(
+        $action,
+        [
+          'type' => RENDER,
+          'render' => $this,
+          'props' => $props,
+          'outlet' => $outlet,
+        ]
+      ));
+    });
+  }
+
+  public function renderChunk($chunk, array $props)
+  {
+    $tpl = $this->convertChunks($chunk);
+
+    return Engine::get()->render(
+      $tpl,
+      $chunk->render($chunk->propsToState([], $props))
     );
   }
 
@@ -32,45 +92,14 @@ class Renderer
   {
     $namespace = $page::EXTEND;
     $extend = new $namespace();
-    $tpl = $this->convertChuncks($extend);
+    $tpl = $this->convertChunks($extend);
 
-    $outlets = $store->getState();
-    $outlets['content'] = $this->renderChunck($page);
+    $outlets = $this->store->getState();
+    $outlets['content'] = $this->renderChunk($page, $page->render([]));
+
     return Engine::get()->render(
       $tpl,
       $outlets
-    );
-  }
-
-  protected function convertChuncks($view)
-  {
-    $matches = (new Includer())->parse($view::TPL);
-    if (count($matches) === 0) { return $view::TPL; }
-
-    $replace = [];
-    $outlets = [];
-    foreach ($matches[1] as $match) {
-      $name = 'tiimber-' . $match . '-' . uniqid();
-      $replace[] = '{{{' . $name . '}}}';
-      $action = $extend->{$match}();
-      $this->store->dispatch(array_merge(
-        $action,
-        [
-          'outlet' => $name,
-          'render' => $this,
-        ]
-      ));
-    }
-    return str_replace($matches[0], $replace, $extend::TPL);
-  }
-
-  public function renderChunck($chunck)
-  {
-    $tpl = $this->convertChuncks($chunck);
-
-    return Engine::get()->render(
-      $tpl,
-      $chunck->render([])
     );
   }
   
@@ -80,10 +109,5 @@ class Renderer
       $page::TPL,
       $page->render($page->stateToProps([], []))
     );
-  }
-
-  public function refresh()
-  {
-    $this->outlets = [];
   }
 }
