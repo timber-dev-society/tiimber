@@ -14,3 +14,5 @@ const FOLDER = 'folders';
 const HELPER = 'helpers';
 
 const PAGE = 'pages';
+
+const STORE = 'store';

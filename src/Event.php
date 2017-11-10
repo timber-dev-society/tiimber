@@ -65,7 +65,7 @@ class Event
   
   public function attachEvents()
   {
-    foreach (Memory::get(ACTION) as $namespace => $action) {
+    /*foreach (Memory::get(ACTION) as $namespace => $action) {
       $this->checkActionInterface($action, $namespace);
       $this->attachActionEvents($action, $namespace);
     }

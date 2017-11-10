@@ -31,7 +31,6 @@ class Engine
   private function __construct()
   {
     $this->engine = new Mustache_Engine([
-      'cache' => $this->getCacheDir(),
       'pragmas' => [Mustache_Engine::PRAGMA_FILTERS],
       'helpers' => $this->getHelper()
     ]);

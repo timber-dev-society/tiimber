@@ -141,7 +141,7 @@ trait ServerTrait
         'res' => $response
       ]);
 
-      Memory::events()->emit(END, ['content' => $render->renderPage($this->pages->resolve(REQUEST . ES . $route))]);
+      Memory::events()->emit(END, ['content' => $render->render($this->pages->resolve(REQUEST . ES . $route))]);
 
     } catch (RouteNotFoundException $e) {
       return $this->emitError($e, 404, $request, $response);

@@ -1,12 +1,13 @@
 <?php
 namespace Tiimber\Traits;
 
+use React\Promise\Promise;
+use Rb\Redux\Store;
+
 use Tiimber\{Memory, Loader, Request};
 use const Tiimber\Consts\Folder\{BASE, CONFIG, RESOURCE, CACHE};
-use const Tiimber\Consts\Scopes\FOLDER;
-
-use React\Promise\Promise;
-
+use const Tiimber\Consts\Scopes\{FOLDER, STORE};
+use const Tiimber\Consts\Action\{USER_STORE};
 
 trait ApplicationTrait
 {
@@ -17,6 +18,11 @@ trait ApplicationTrait
       $app = reset($explodedClass);
     }
     (new Loader($app));
+  }
+
+  public function setStore(Store $store)
+  {
+    Memory::set(STORE)->set(USER_STORE, $store);
   }
 
   public function setRoot(string $dir)

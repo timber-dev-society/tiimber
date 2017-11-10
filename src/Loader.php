@@ -14,7 +14,7 @@ class Loader
   {
     //$this->viewsLoading($namespace, $this->getBaseDir() . DS . $namespace);
     $this->pagesLoading($namespace, $this->getBaseDir() . DS . $namespace);
-    $this->actionsLoading($namespace, $this->getBaseDir() . DS . $namespace);
+    //$this->actionsLoading($namespace, $this->getBaseDir() . DS . $namespace);
     $this->helpersLoading($namespace, $this->getBaseDir() . DS . $namespace);
     //$this->layoutsLoading($namespace, $this->getBaseDir() . DS . $namespace);
   }
