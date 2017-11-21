@@ -30,15 +30,17 @@ class Renderer
 
   protected function convertChunks($view)
   {
-    $matches = $this->parseChunk($view::TPL);
+    $tpl = $view->render();
+    $matches = $this->parseChunk($tpl);
 
-    return generateTpl(0, $matches, $view, $view::TPL, function ($action, $outlet, $props) {
+    return generateTpl(0, $matches, $view, $tpl, function ($action, $outlets) {
+      var_dump($action);
       $this->store->dispatch(array_merge(
         $action,
         [
           'type' => RENDER,
           'render' => $this,
-          'props' => $props,
+          'props' => $action->getData(),
           'outlet' => $outlet,
         ]
       ));
@@ -50,8 +52,7 @@ class Renderer
     $tpl = $this->convertChunks($chunk);
 
     return Engine::get()->render(
-      $tpl,
-      $chunk->render($chunk->propsToState([], $props))
+      $chunk->render()
     );
   }
 

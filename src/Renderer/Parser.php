@@ -27,7 +27,7 @@ function generateTpl(int $i, array $matches, View $view, string $tpl, callable $
   $cb(
     $view->{$matches[1][$i]}(),
     $name,
-    convertParams(0, explode(' ', trim($matches[2][$i])), $view->render([]), [])
+    convertParams(0, explode(' ', trim($matches[2][$i])), $view->getData(), [])
   );
 
   return generateTpl(
