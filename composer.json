@@ -14,7 +14,7 @@
             "Tiimber\\": "src/"
         },
         "files": [
-            "src/consts/includes.php"
+            "src/includes.php"
         ]
     },
     "require": {
