@@ -1,7 +1,7 @@
 <?php
 namespace Tiimber\Tests;
 
-use Tiimber\ParameterBag;
+use Tiimber\Bags\ParameterBag;
 
 use PHPUnit_Framework_TestCase;
 

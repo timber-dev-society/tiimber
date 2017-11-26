@@ -19,7 +19,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
   public function testLoadConfigFiles()
   {
     $value = Config::get('controllers');
-    $this->assertInstanceOf('Tiimber\\ImmutableBag', $value);
+    $this->assertInstanceOf('Tiimber\\Bags\\ImmutableBag', $value);
     $this->assertEquals('Tiimber\\Tests\\Application\\Controllers\\Index', $value->get('Index'));
   }
 
