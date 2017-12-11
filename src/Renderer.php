@@ -12,7 +12,7 @@ class Renderer
   private $outlets = [];
 
   private $dispatch;
-  
+
   public function __construct()
   {
     include __DIR__ . DIRECTORY_SEPARATOR . 'Reducers.php';
@@ -33,14 +33,13 @@ class Renderer
     $tpl = $view->render();
     $matches = $this->parseChunk($tpl);
 
-    return generateTpl(0, $matches, $view, $tpl, function ($action, $outlets) {
-      var_dump($action);
+    return generateTpl(0, $matches, $view, $tpl, function ($action, $outlets, $props) {
       $this->store->dispatch(array_merge(
         $action,
         [
           'type' => RENDER,
           'render' => $this,
-          'props' => $action->getData(),
+          'props' => $props,
           'outlet' => $outlet,
         ]
       ));
@@ -63,14 +62,14 @@ class Renderer
     $tpl = $this->convertChunks($extend);
 
     $outlets = $this->store->getState();
-    $outlets['children'] = $this->renderChunk($view, $view->render([]));
+    $outlets['children'] = $this->renderChunk($view, $view->getData());
 
     return Engine::get()->render(
       $tpl,
       $outlets
     );
   }
-  
+
   public function render(View $page): string
   {
     if ($page::EXTEND !== null) {
