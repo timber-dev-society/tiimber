@@ -13,6 +13,7 @@ function convertParams(int $i, array $params, array $values, array $acc): array
   if ($acc[$key] = json_decode($val) !== null) {
     return convertParams($i + 1, $params, $values, $acc);
   } else {
+    $param = str_replace(['{', '}'], '', $val);
     $acc[$key] = ($values[str_replace(['{', '}'], '', $val)] ?? null);
     return convertParams($i + 1, $params, $values, $acc);
   }
@@ -23,11 +24,12 @@ function generateTpl(int $i, array $matches, View $view, string $tpl, callable $
   if (($i + 1) > count($matches[0]) || count($matches[0]) === 0) return $tpl;
 
   $name = 'tiimber-' . $matches[1][$i] . '-' . uniqid();
+  $params = convertParams(0, explode(' ', trim($matches[2][$i])), $view->getData(), []);
 
   $cb(
-    $view->{$matches[1][$i]}(),
+    $view->{$matches[1][$i]}($params),
     $name,
-    convertParams(0, explode(' ', trim($matches[2][$i])), $view->getData(), [])
+    $params
   );
 
   return generateTpl(

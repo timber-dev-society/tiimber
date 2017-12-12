@@ -13,9 +13,9 @@ class ParameterBag implements IteratorAggregate
 {
   protected $properties;
 
-  public function __construct($properties = null)
+  public function __construct(array $properties = null)
   {
-    $this->properties = is_null($properties) ? new stdClass() : (object)$properties;
+    $this->properties = $properties ?? [];
   }
 
   /**
@@ -27,7 +27,7 @@ class ParameterBag implements IteratorAggregate
    */
   public function get(string $key, $default = null)
   {
-    return $this->properties->{$key} ?? $default;
+    return $this->properties[$key] ?? $default;
   }
 
   /**
@@ -39,7 +39,7 @@ class ParameterBag implements IteratorAggregate
    */
   public function set(string $key, $value): ParameterBag
   {
-    $this->properties->{$key} = $value;
+    $this->properties[$key] = $value;
     return $this;
   }
 
@@ -51,13 +51,13 @@ class ParameterBag implements IteratorAggregate
    */
   public function has(string $key): bool
   {
-    return isset($this->properties->{$key});
+    return isset($this->properties[$key]);
   }
 
   public function unset(string $key): ParameterBag
   {
     if ($this->has($key)) {
-      unset($this->properties->{$key});
+      unset($this->properties[$key]);
     }
     return $this;
   }
@@ -68,5 +68,21 @@ class ParameterBag implements IteratorAggregate
   public function getIterator(): ArrayIterator
   {
     return new ArrayIterator($this->properties);
+  }
+
+  public function __GET(string $key)
+  {
+    return $this->get($key);
+  }
+
+  public function merge(array $values): ParameterBag
+  {
+    $properties = array_merge($this->properties, $values);
+    return new ParameterBag($properties);
+  }
+
+  public function toArray(): array
+  {
+    return $this->properties;
   }
 }

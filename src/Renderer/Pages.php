@@ -37,8 +37,10 @@ class Pages
 
     foreach (Memory::get(PAGE) as $namespace => $page) {
       if (!defined($namespace . '::EVENTS')) continue;
+
       foreach ($page::EVENTS as $event) {
         $common = array_intersect($pieces, explode(ES, $event));
+
         if (count($common) > 0) {
           $pages[count($common)] = $namespace;
         }

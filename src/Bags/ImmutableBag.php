@@ -13,7 +13,7 @@ class ImmutableBag implements IteratorAggregate
 
   public function __construct($properties = null)
   {
-    $this->properties = is_null($properties) ? new stdClass() : (object)$properties;
+    $this->properties = $properties ?? [];
   }
 
   /**
@@ -25,7 +25,7 @@ class ImmutableBag implements IteratorAggregate
    */
   public function get(string $key, $default = null)
   {
-    return $this->properties->{$key} ?? $default;
+    return $this->properties[$key] ?? $default;
   }
 
   /**
@@ -36,7 +36,7 @@ class ImmutableBag implements IteratorAggregate
    */
   public function has(string $key): bool
   {
-    return isset($this->properties->{$key});
+    return isset($this->properties[$key]);
   }
 
   /**
@@ -50,5 +50,10 @@ class ImmutableBag implements IteratorAggregate
   public function toArray(): array
   {
     return (array)$this->properties;
+  }
+
+  public function __GET(string $key)
+  {
+    return $this->get($key);
   }
 }

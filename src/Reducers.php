@@ -5,9 +5,11 @@ use const Tiimber\Consts\Actions\RENDER;
 
 $chunk = function (?array $state, array $action)
 {
-  switch ($action['type']) {
+  ['type' => $type, 'render' => $render, 'view' => $view, 'props' => $props] = $action;
+
+  switch ($type) {
     case RENDER:
-      return $action['render']->renderChunk($action['view'], $action['props']);
+      return $render->renderComponent($view, $props);
     default:
       return $state;
   }
@@ -15,11 +17,13 @@ $chunk = function (?array $state, array $action)
 
 $render = function ($state = [], $action) use ($chunk)
 {
-  switch ($action['type']) {
+  ['type' => $type, 'outlet' => $outlet] = $action;
+
+  switch ($type) {
     case RENDER:
       return array_merge(
         $state,
-        [$action['outlet'] => $chunk(null, $action)]
+        [$outlet => $chunk(null, $action)]
       );
     default:
       return $state;

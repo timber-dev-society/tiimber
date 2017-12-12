@@ -33,7 +33,8 @@ class Renderer
     $tpl = $view->render();
     $matches = $this->parseChunk($tpl);
 
-    return generateTpl(0, $matches, $view, $tpl, function ($action, $outlets, $props) {
+    return generateTpl(0, $matches, $view, $tpl, function ($action, $outlet, $props) {
+
       $this->store->dispatch(array_merge(
         $action,
         [
@@ -46,12 +47,19 @@ class Renderer
     });
   }
 
+  public function renderComponent(string $className, array $props)
+  {
+    $component = new $className($props);
+    return $this->renderChunk($component, $props);
+  }
+
   public function renderChunk(View $chunk, array $props)
   {
     $tpl = $this->convertChunks($chunk);
 
     return Engine::get()->render(
-      $chunk->render()
+      $chunk->render(),
+      $chunk->getData()
     );
   }
 
