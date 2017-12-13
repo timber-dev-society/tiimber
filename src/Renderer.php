@@ -49,7 +49,7 @@ class Renderer
 
   public function renderComponent(string $className, array $props)
   {
-    $component = new $className($props);
+    $component = (new $className())->initialize($props);
     return $this->renderChunk($component, $props);
   }
 
@@ -57,32 +57,27 @@ class Renderer
   {
     $tpl = $this->convertChunks($chunk);
 
-    return Engine::get()->render(
-      $chunk->render(),
-      $chunk->getData()
-    );
+    return $tpl;
   }
 
-  public function renderExtended(View $view)
+  public function renderExtended(View $view, string $children): string
   {
     $namespace = $view::EXTEND;
-    $extend = new $namespace();
+
+    $extend = (new $namespace())->initialize(['children' => $children]);
     $tpl = $this->convertChunks($extend);
+    $state = $this->store->getState();
 
-    $outlets = $this->store->getState();
-    $outlets['children'] = $this->renderChunk($view, $view->getData());
-
-    return Engine::get()->render(
-      $tpl,
-      $outlets
-    );
+    return str_replace(array_keys($state), $state, $tpl);
   }
 
   public function render(View $page): string
   {
+    $page->initialize([]);
+    $children = $this->convertChunks($page, $page->getData());
     if ($page::EXTEND !== null) {
-      return $this->renderExtended($page);
+      return $this->renderExtended($page, $children);
     }
-    return $this->renderChunk($page, [[], []]);
+    return $children;
   }
 }

@@ -20,7 +20,6 @@
     "require": {
         "psr/log": "^1.0",
         "symfony/routing": "^3.0",
-        "mustache/mustache": "^2.10",
         "react/react": "^0.4.2"
     },
     "require-dev": {

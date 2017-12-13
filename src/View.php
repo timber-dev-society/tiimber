@@ -12,10 +12,20 @@ abstract class View
 
   private $state;
 
-  public function __construct(array $props = null)
+  private $init = false;
+
+  public function __construct()
+  {}
+
+  final public function initialize(array $props = null): View
   {
-    $this->props = new ImmutableBag($props) ?? new ImmutableBag();
-    $this->state = new ParameterBag();
+    if ($this->init === false) {
+      $this->props = new ImmutableBag($props) ?? new ImmutableBag();
+      $this->state = new ParameterBag();
+      $this->init = true;
+    }
+
+    return $this;
   }
 
   final public function getData(): array

@@ -23,12 +23,11 @@ function generateTpl(int $i, array $matches, View $view, string $tpl, callable $
 {
   if (($i + 1) > count($matches[0]) || count($matches[0]) === 0) return $tpl;
 
-  $name = 'tiimber-' . $matches[1][$i] . '-' . uniqid();
   $params = convertParams(0, explode(' ', trim($matches[2][$i])), $view->getData(), []);
 
   $cb(
     $view->{$matches[1][$i]}($params),
-    $name,
+    $matches[0][$i],
     $params
   );
 
@@ -36,7 +35,7 @@ function generateTpl(int $i, array $matches, View $view, string $tpl, callable $
     $i + 1,
     $matches,
     $view,
-    str_replace($matches[0][$i], '{{{' . $name . '}}}', $tpl),
+    $tpl,
     $cb
   );
 }

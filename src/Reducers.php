@@ -1,7 +1,7 @@
 <?php
 namespace Tiimber\Reducer;
 
-use const Tiimber\Consts\Actions\RENDER;
+use const Tiimber\Consts\Actions\{RENDER, CLEAN};
 
 $chunk = function (?array $state, array $action)
 {
@@ -25,6 +25,8 @@ $render = function ($state = [], $action) use ($chunk)
         $state,
         [$outlet => $chunk(null, $action)]
       );
+    case CLEAN:
+      return [];
     default:
       return $state;
   }
