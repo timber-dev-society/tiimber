@@ -21,7 +21,7 @@ trait ServerTrait
 {
   use LoggerTrait;
   use RouteResolverTrait;
-  
+
   private static $start;
 
   private $pages;
@@ -85,7 +85,7 @@ trait ServerTrait
   public function runApp(): callable
   {
     return function (ReactRequest $rRequest, ReactResponse $rResponse) {
-      
+
       self::$start = microtime(true);
       Memory::events()->emit(ON, []);
       list($request, $response) = $this->initApp($rRequest, $rResponse);
@@ -123,7 +123,12 @@ trait ServerTrait
       'req' => $request,
       'res' => $response
     ]);
-    Memory::events()->emit(END, ['content' => $render->render($this->pages->resolveErrorLayout(ERROR . ES . $code))]);
+    Memory::events()->emit(END, [
+      'content' => $render->render(
+        $this->pages->resolveErrorLayout(ERROR . ES . $code),
+        ['request' => $request, 'error' => $error]
+      )
+    ]);
   }
 
   private function emitRequest($request, $response)
@@ -141,7 +146,12 @@ trait ServerTrait
         'res' => $response
       ]);
 
-      Memory::events()->emit(END, ['content' => $render->render($this->pages->resolve(REQUEST . ES . $route))]);
+      Memory::events()->emit(END, [
+        'content' => $render->render(
+          $this->pages->resolve(REQUEST . ES . $route),
+          ['request' => $request]
+        )
+      ]);
 
     } catch (RouteNotFoundException $e) {
       return $this->emitError($e, 404, $request, $response);

@@ -20,11 +20,11 @@ class Event
   use EventEmitterTrait, LoggerTrait;
 
   private $renderer;
-  
+
   private $isLocked;
-  
+
   private $scope;
-  
+
   public function __construct($scope)
   {
     $this->scope = $scope;
@@ -62,7 +62,7 @@ class Event
       throw new RuntimeException($namespace . ' must implement \\Tiimber\\Interfaces\\RenderableInterface');
     }
   }
-  
+
   public function attachEvents()
   {
     /*foreach (Memory::get(ACTION) as $namespace => $action) {
@@ -75,7 +75,7 @@ class Event
       $this->attachViewEvents($view, $namespace);
     }*/
   }
-  
+
   public function accept(string $event): bool
   {
     return strpos($event, $this->scope) === 0;
@@ -93,7 +93,7 @@ class Event
       }
     }
   }
-  
+
   private function propageRenderEvent($namespace, $request, $args)
   {
     $pieces = explode('\\', $namespace);
@@ -101,7 +101,7 @@ class Event
     $event = strtolower(implode(ES, $pieces));
 
     $this->dispatcher->emit(
-      RENDER, 
+      RENDER,
       str_replace('view', '', $event),
       $this->renderer,
       [

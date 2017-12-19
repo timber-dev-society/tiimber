@@ -2,7 +2,7 @@
 
 namespace Tiimber;
 
-use Tiimber\{Action, View, Renderer, Memory, Event, Interfaces\DispatcherInterface};
+use Tiimber\{Memory, Event};
 
 use const Tiimber\Consts\Scopes\{ACTION, VIEW};
 use const Tiimber\Consts\Events\{ERROR, RENDER, REQUEST, ES};
@@ -10,9 +10,9 @@ use const Tiimber\Consts\Events\{ERROR, RENDER, REQUEST, ES};
 class Dispatcher
 {
   private $renderer;
-  
+
   private $event = [];
-  
+
   private function loadEvents(string $scope)
   {
     $this->events[$scope] = new Event($scope);
@@ -21,12 +21,12 @@ class Dispatcher
       $this->events[$scope]->dispatch(
         $renderer,
         $this,
-        $scope . ES . $event, 
+        $scope . ES . $event,
         $parameters
       );
     });
   }
-  
+
   public function emit($event, $name, $render, $args)
   {
     Memory::events()->emit($event, [
@@ -35,7 +35,7 @@ class Dispatcher
       'parameters' => $args
     ]);
   }
-  
+
   public function __construct()
   {
     $this->loadEvents(ERROR);

@@ -21,7 +21,7 @@ class Pages
 
   public function resolve($route)
   {
-    return Memory::get(PAGE)->get($this->pages[$route]);
+    return $this->pages[$route];
   }
 
   public function resolveErrorLayout($error)

@@ -15,7 +15,7 @@ $chunk = function (?array $state, array $action)
   }
 };
 
-$render = function ($state = [], $action) use ($chunk)
+$render = function (?array $state, array $action) use ($chunk)
 {
   ['type' => $type, 'outlet' => $outlet] = $action;
 

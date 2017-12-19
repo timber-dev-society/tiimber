@@ -71,9 +71,10 @@ class Renderer
     return str_replace(array_keys($state), $state, $tpl);
   }
 
-  public function render(View $page): string
+  public function render(string $namespace, array $props): string
   {
-    $page->initialize([]);
+    $page = new $namespace();
+    $page->initialize($props);
     $children = $this->convertChunks($page, $page->getData());
     if ($page::EXTEND !== null) {
       return $this->renderExtended($page, $children);
