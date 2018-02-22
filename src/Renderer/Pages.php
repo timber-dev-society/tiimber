@@ -2,13 +2,16 @@
 
 namespace Tiimber\Renderer;
 
-use Tiimber\Memory;
+use Tiimber\{Memory, Traits\LoggerTrait};
 
 use const Tiimber\Consts\Scopes\PAGE;
 use const Tiimber\Consts\Events\{REQUEST, ES};
+use const Tiimber\Consts\LogLevel\{WARNING};
 
 class Pages
 {
+  use LoggerTrait;
+
   private $pages = [];
 
   public function __construct($routes)
@@ -36,8 +39,12 @@ class Pages
     $default;
 
     foreach (Memory::get(PAGE) as $namespace => $page) {
-      if (!defined($namespace . '::EVENTS')) continue;
-
+      var_dump($route, defined($namespace . '::EVENTS'));
+      if (!defined($namespace . '::EVENTS')) {
+        Memory::get(PAGE)->unset($namespace);
+        $this->log(WARNING, 'No events found for Page '.$namespace);
+        continue;
+      }
       foreach ($page::EVENTS as $event) {
         $common = array_intersect($pieces, explode(ES, $event));
 
