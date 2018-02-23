@@ -39,16 +39,19 @@ class Pages
     $default;
 
     foreach (Memory::get(PAGE) as $namespace => $page) {
-      var_dump($route, defined($namespace . '::EVENTS'));
       if (!defined($namespace . '::EVENTS')) {
         Memory::get(PAGE)->unset($namespace);
         $this->log(WARNING, 'No events found for Page '.$namespace);
         continue;
       }
       foreach ($page::EVENTS as $event) {
-        $common = array_intersect($pieces, explode(ES, $event));
+        $exploded = explode(ES, $event);
+        $common = array_intersect($pieces, $exploded);
+        $cleaned = array_filter($exploded, function ($value) {
+          return $value !== '*';
+        });
 
-        if (count($common) > 0) {
+        if (count($common) > 0 && $common === $cleaned) {
           $pages[count($common)] = $namespace;
         }
       }
@@ -56,6 +59,8 @@ class Pages
     if (count($pages) !== 0) {
       ksort($pages);
       return end($pages);
+    } else {
+      $this->log(WARNING, 'The route '.$route.' doesn\'t match any pages');
     }
   }
 }
