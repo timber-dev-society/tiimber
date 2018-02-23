@@ -6,7 +6,7 @@ use React\EventLoop\Factory;
 use React\Socket\Server as Socket;
 use React\Http\{Server as Http, Request as ReactRequest, Response as ReactResponse};
 
-use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 use Tiimber\{Config, Dispatcher, Memory, Renderer, Renderer\Pages};
 use Tiimber\Http\{Request, Response, Cookie, Session, QueryParser};
@@ -100,7 +100,6 @@ trait ServerTrait
         } else {
           $this->emitRequest($request, $response);
         }
-
       } catch (\Throwable $e) {
         return $this->emitError($e, 500, $request, $response);
       } catch (\Exception $e) {
@@ -111,7 +110,7 @@ trait ServerTrait
 
   private function emitError($error, int $code, Request $request, Response $response)
   {
-    if (!$error instanceof RouteNotFoundException) {
+    if (!$error instanceof ResourceNotFoundException) {
       $this->log(LOG_ERROR, $error->getMessage());
       $this->log(LOG_ERROR, $error->getTraceAsString());
     }
@@ -153,7 +152,7 @@ trait ServerTrait
         )
       ]);
 
-    } catch (RouteNotFoundException $e) {
+    } catch (ResourceNotFoundException $e) {
       return $this->emitError($e, 404, $request, $response);
     }
   }
