@@ -8,7 +8,7 @@ abstract class Injected implements InjectedInterface
 {
   private $dependecies;
 
-  public function inject(array $dependencies)
+  public final function inject(array $dependencies)
   {
     $this->dependecies = new ImmutableBag($dependecies);
   }

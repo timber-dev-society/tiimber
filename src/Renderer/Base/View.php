@@ -1,10 +1,10 @@
 <?php
-namespace Tiimber;
+namespace Tiimber\Renderer\Base;
 
 use Tiimber\{Action, Bags\ImmutableBag, Bags\ParameterBag};
 
-use Tiimber\Exceptions\ViewException;
-use Tiimber\Interfaces\RenderableInterface;
+use Tiimber\Renderer\Exceptions\ViewException;
+use Tiimber\Renderer\Interfaces\RenderableInterface;
 
 abstract class View
 {
