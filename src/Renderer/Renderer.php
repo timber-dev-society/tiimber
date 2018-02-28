@@ -1,9 +1,9 @@
 <?php
-namespace Tiimber;
+namespace Tiimber\Renderer;
 
 use Rb\Redux\Store;
 
-use Tiimber\{Memory, View, Renderer\Engine, Renderer\Includer};
+use Tiimber\{Memory, Renderer\Base\View, Renderer\Includer};
 use const Tiimber\Consts\Actions\RENDER;
 use function Tiimber\Renderer\Parser\{convertParams, generateTpl};
 
@@ -15,7 +15,7 @@ class Renderer
 
   public function __construct()
   {
-    include __DIR__ . DIRECTORY_SEPARATOR . 'Reducers.php';
+    include dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Reducers.php';
     $this->store = Store::create($render, []);
   }
 

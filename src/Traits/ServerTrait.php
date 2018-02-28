@@ -8,7 +8,7 @@ use React\Http\{Server as Http, Request as ReactRequest, Response as ReactRespon
 
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
-use Tiimber\{Config, Dispatcher, Memory, Renderer, Renderer\Pages};
+use Tiimber\{Config, Dispatcher, Memory, Renderer\Renderer, Renderer\Pages};
 use Tiimber\Http\{Request, Response, Cookie, Session, QueryParser};
 use Tiimber\Traits\{RouteResolverTrait, LoggerTrait};
 

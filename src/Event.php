@@ -6,7 +6,7 @@ use RuntimeException;
 
 use Evenement\EventEmitterTrait;
 
-use Tiimber\{Action, View, Renderer, Memory, Traits\LoggerTrait};
+use Tiimber\{Action, View, Renderer\Renderer, Memory, Traits\LoggerTrait};
 use Tiimber\Interfaces\{DispatcherInterface, ActionInterface, RenderableInterface};
 
 use const Tiimber\Consts\Scopes\{ACTION, VIEW};
@@ -50,7 +50,7 @@ class Event
   private function checkActionInterface($action, $namespace)
   {
     if (!$action instanceof ActionInterface) {
-      throw new RuntimeException($namespace . ' must implement \\Tiimber\\Interfaces\\ActionInterface');
+      throw new RuntimeException($namespace . ' must implement ' . ActionInterface::class);
     }
   }
 
@@ -59,7 +59,7 @@ class Event
     //$this->checkActionInterface($view, $namespace);
 
     if (!$view instanceof RenderableInterface) {
-      throw new RuntimeException($namespace . ' must implement \\Tiimber\\Interfaces\\RenderableInterface');
+      throw new RuntimeException($namespace . ' must implement ' . RenderableInterface::class);
     }
   }
 

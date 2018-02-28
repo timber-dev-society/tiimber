@@ -19,7 +19,7 @@ class SerializableBag extends ParameterBag implements IteratorAggregate, Seriali
         $this->checkProperty($property);
       }
     }
-    
+
     parent::__construct($properties);
   }
 
@@ -44,7 +44,7 @@ class SerializableBag extends ParameterBag implements IteratorAggregate, Seriali
    */
   public function serialize(): string
   {
-    return json_encode($this->properties);
+    return serialize($this->properties);
   }
 
   /**
@@ -55,7 +55,7 @@ class SerializableBag extends ParameterBag implements IteratorAggregate, Seriali
    */
   public function unserialize($serialized): SerializableBag
   {
-    $properties = json_decode($serialized);
+    $properties = unserialize($serialized);
     $this->properties = is_null($properties) ? new stdClass() : (object)$properties;
 
     return $this;
@@ -64,7 +64,7 @@ class SerializableBag extends ParameterBag implements IteratorAggregate, Seriali
   private function checkProperty($property)
   {
     if (is_object($property) && !$property instanceof Serializable) {
-      throw new Exception('To store ' . get_class($property) . 'in a ParameterBag, your object must be implementing Serializable interface.', 500);
+      throw new Exception('To store ' . get_class($property) . 'in a SerializableBag, your object must be implementing Serializable interface.', 500);
     }
   }
 }

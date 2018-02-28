@@ -2,7 +2,7 @@
 namespace Tiimber\Renderer\Parser;
 
 use const Tiimber\Consts\Actions\RENDER;
-use Tiimber\View;
+use Tiimber\Renderer\Base\View;
 
 function convertParams(int $i, array $params, array $values, array $acc): array
 {

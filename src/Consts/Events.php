@@ -14,7 +14,7 @@ const ES = '::';
 
 const STOP = 'stop' . ES . 'rendering';
 
-const END = 'responce' . ES . 'end';
+const END = 'response' . ES . 'end';
 
 const ON = 'on' . ES . 'request';
 
