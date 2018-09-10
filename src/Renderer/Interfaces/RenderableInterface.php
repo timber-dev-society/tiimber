@@ -4,5 +4,5 @@ namespace Tiimber\Renderer\Interfaces;
 
 interface RenderableInterface
 {
-  public function render(): array;
+  public function render(): string;
 }

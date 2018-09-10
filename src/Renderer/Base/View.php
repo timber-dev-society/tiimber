@@ -6,7 +6,7 @@ use Tiimber\{Action, Bags\ImmutableBag, Bags\ParameterBag};
 use Tiimber\Renderer\Exceptions\ViewException;
 use Tiimber\Renderer\Interfaces\RenderableInterface;
 
-abstract class View
+abstract class View implements RenderableInterface
 {
   private $props;
 
