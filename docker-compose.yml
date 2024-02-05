@@ -1,7 +1,13 @@
-version: "2"
+version: "3.8"
+
 services:
-  testenv:
-    image: php:7-alpine
+  php:
+    image: php:8.3-alpine
     volumes:
-      - ./:/usr/src/myapp
-    command: /usr/src/myapp/vendor/bin/phpunit /usr/src/myapp/tests/ --bootstrap /usr/src/myapp/tests/bootstrap.php
+      - ./:/app
+    working_dir: /app
+  composer:
+    image: composer
+    volumes:
+      - ./:/app
+    working_dir: /app

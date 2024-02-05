@@ -18,13 +18,12 @@
         ]
     },
     "require": {
-        "psr/log": "^1.0",
-        "symfony/routing": "^3.0",
-        "mustache/mustache": "^2.10",
-        "react/react": "^0.4.2"
+        "psr/log": "^3.0",
+        "symfony/routing": "^7.0",
+        "mustache/mustache": "^2.14",
+        "react/react": "^1.4"
     },
     "require-dev": {
-        "phpunit/phpunit": "5.4",
-        "mikey179/vfsStream": "^1.6"
+        "phpunit/phpunit": "11.0"
     }
 }
